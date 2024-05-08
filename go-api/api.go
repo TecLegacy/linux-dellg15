@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -50,24 +51,27 @@ func (api *APIServer) Run() {
 func makeHTTPHandleFunc(h apiFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := h(w, r); err != nil {
-			RespondWithJSON(w, 200, ErrorMessage{
+			RespondWithJSON(w, http.StatusBadRequest, ErrorMessage{
 				Error: err.Error(),
 			})
 		}
 	}
 }
 
+// Method based Routing
 func (api *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) error {
 
 	if r.Method == "GET" {
-		api.handleGetAccount(w, r)
+		return api.handleGetAccount(w, r)
 	}
 
-	return nil
+	return fmt.Errorf("method not allowed in this route : %s ", r.Method)
 }
 
-func (api *APIServer) handleGetAccount(w http.ResponseWriter, r *http.Request) error {
-	w.Write([]byte("Gorilla!\n"))
+func (api *APIServer) handleGetAccount(w http.ResponseWriter, _ *http.Request) error {
+	account := NewAccount("keshav", "kumar")
+
+	RespondWithJSON(w, http.StatusOK, account)
 
 	return nil
 }
