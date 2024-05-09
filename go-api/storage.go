@@ -50,7 +50,7 @@ func (s *PostgresStore) CreateAccountTable() error {
 		accountnumber serial,
 		balance integer,
 		created_at timestamp
-	)`
+)`
 	result, err := s.DB.Exec(query)
 
 	fmt.Printf("result of query %v ", result)

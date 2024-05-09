@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -68,6 +69,10 @@ func (api *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) erro
 		return api.handleGetAccount(w, r)
 	}
 
+	if r.Method == "POST" {
+		return api.handleCreateAccount(w, r)
+	}
+
 	return fmt.Errorf("method not allowed in this route : %s ", r.Method)
 }
 
@@ -77,6 +82,26 @@ func (api *APIServer) handleGetAccount(w http.ResponseWriter, r *http.Request) e
 	id := mux.Vars(r)
 
 	fmt.Print("Id", id)
+	//TODO: query db to get account with specific id
+
+	RespondWithJSON(w, http.StatusOK, account)
+
+	return nil
+}
+
+func (api *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) error {
+	createAccountReq := new(CreateAccountRequest)
+
+	if err := json.NewDecoder(r.Body).Decode(createAccountReq); err != nil {
+		return err
+	}
+
+	account := NewAccount(createAccountReq.FirstName, createAccountReq.LastName)
+
+	//Create account in PostgresDB -> DB request
+	if err := api.store.CreateAccount(account); err != nil {
+		return err
+	}
 
 	RespondWithJSON(w, http.StatusOK, account)
 
