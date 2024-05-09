@@ -11,6 +11,7 @@ import (
 
 type APIServer struct {
 	listenAddr string
+	store      Storage
 }
 
 type apiFunc func(w http.ResponseWriter, r *http.Request) error
@@ -20,9 +21,10 @@ type ErrorMessage struct {
 }
 
 // Define Port Address
-func NewApiServer(listenAddr string) *APIServer {
+func NewApiServer(listenAddr string, store Storage) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
+		store:      store,
 	}
 }
 
@@ -48,6 +50,7 @@ func (api *APIServer) Run() {
 }
 
 // Decorator Function to make http.HandleFunc
+// Handle the errors from handlers
 func makeHTTPHandleFunc(h apiFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := h(w, r); err != nil {
@@ -68,8 +71,12 @@ func (api *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) erro
 	return fmt.Errorf("method not allowed in this route : %s ", r.Method)
 }
 
-func (api *APIServer) handleGetAccount(w http.ResponseWriter, _ *http.Request) error {
+func (api *APIServer) handleGetAccount(w http.ResponseWriter, r *http.Request) error {
 	account := NewAccount("keshav", "kumar")
+
+	id := mux.Vars(r)
+
+	fmt.Print("Id", id)
 
 	RespondWithJSON(w, http.StatusOK, account)
 
