@@ -13,7 +13,7 @@ type PostgresStore struct {
 }
 
 type Storage interface {
-	CreateAccount(*Account) error
+	CreateAccount(*Account) (*Account, error)
 	DeleteAccount(int) error
 	UpdateAccount(*Account) error
 	GetAccountByID(int) (*Account, error)
@@ -62,35 +62,51 @@ func (s *PostgresStore) CreateAccountTable() error {
 --------------------------------------------------------
 */
 // Implementing Storage Interface
-func (s *PostgresStore) CreateAccount(a *Account) error {
+func (s *PostgresStore) CreateAccount(a *Account) (*Account, error) {
 	query := `INSERT INTO account(
-		first_name,
-		last_name,
-		account_number,
-		balance,
-		created_at
-		)
-		
-		VALUES($1,$2,$3,$4,$5)
-	
-		`
-	res, err := s.db.Query(query, a.FirstName, a.LastName, a.AccNumber, a.Balance, a.CreatedAt)
+			first_name,
+			last_name,
+			account_number,
+			balance,
+			created_at
+			)
+			VALUES($1,$2,$3,$4,$5)
+			RETURNING *
+			`
+	row := s.db.QueryRow(query, a.FirstName, a.LastName, a.AccNumber, a.Balance, a.CreatedAt)
+	account, err := ScanIntoAccountFromRow(row)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("sq %v", err)
 	}
-	fmt.Printf("rows inserted successfully -> %+v", res)
-	return nil
 
+	return account, nil
 }
+
 func (s *PostgresStore) DeleteAccount(int) error {
 	return nil
 }
+
 func (s *PostgresStore) UpdateAccount(a *Account) error {
 	return nil
 }
-func (s *PostgresStore) GetAccountByID(int) (*Account, error) {
-	return nil, nil
+
+func (s *PostgresStore) GetAccountByID(id int) (*Account, error) {
+	query := `SELECT * FROM account
+		WHERE id = $1
+	`
+	rows, err := s.db.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		account, err := ScanIntoAccountFromRows(rows)
+		return account, err
+	}
+
+	return nil, fmt.Errorf("no account found for id %v", id)
 }
+
 func (s *PostgresStore) GetAllAccounts() ([]*Account, error) {
 
 	rows, err := s.db.Query("SELECT * FROM account")
@@ -100,15 +116,7 @@ func (s *PostgresStore) GetAllAccounts() ([]*Account, error) {
 
 	accounts := []*Account{}
 	for rows.Next() {
-		account := new(Account)
-		err := rows.Scan(
-			&account.ID,
-			&account.FirstName,
-			&account.LastName,
-			&account.AccNumber,
-			&account.Balance,
-			&account.CreatedAt,
-		)
+		account, err := ScanIntoAccountFromRows(rows)
 
 		if err != nil {
 			return nil, err

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -80,12 +81,19 @@ func (api *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) erro
 // Description: This handler returns the account with the specified ID.
 // Response: Returns a JSON object representing the account.
 func (api *APIServer) handleGetAccountByID(w http.ResponseWriter, r *http.Request) error {
-	account := NewAccount("keshav", "kumar")
+	// account := NewAccount("keshav", "kumar")
 
-	id := mux.Vars(r)
+	idStr := mux.Vars(r)["id"]
 
-	fmt.Print("Id", id)
-	//TODO: query db to get account with specific id
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return fmt.Errorf("invalid id  %s", idStr)
+	}
+
+	account, err := api.store.GetAccountByID(id)
+	if err != nil {
+		return err
+	}
 
 	RespondWithJSON(w, http.StatusOK, account)
 
@@ -123,7 +131,8 @@ func (api *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request
 	account := NewAccount(createAccountReq.FirstName, createAccountReq.LastName)
 
 	//Create account in PostgresDB -> DB request
-	if err := api.store.CreateAccount(account); err != nil {
+	account, err := api.store.CreateAccount(account)
+	if err != nil {
 		return err
 	}
 
