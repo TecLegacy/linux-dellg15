@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	store, err := NewPostgesStore()
+	store, err := NewPostgresStore()
 	if err != nil {
 		log.Fatalf("Database connection failed %v", err)
 	}
