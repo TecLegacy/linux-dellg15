@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -19,7 +18,7 @@ type APIServer struct {
 type apiFunc func(w http.ResponseWriter, r *http.Request) error
 
 type ErrorMessage struct {
-	Error string
+	Error string `json:"error"`
 }
 
 // Define Port Address
@@ -81,22 +80,45 @@ func (api *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) erro
 // Description: This handler returns the account with the specified ID.
 // Response: Returns a JSON object representing the account.
 func (api *APIServer) handleGetAccountByID(w http.ResponseWriter, r *http.Request) error {
-	// account := NewAccount("keshav", "kumar")
 
-	idStr := mux.Vars(r)["id"]
+	if r.Method == "GET" {
 
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return fmt.Errorf("invalid id  %s", idStr)
+		id, err := getID(r)
+		if err != nil {
+			return err
+		}
+
+		account, err := api.store.GetAccountByID(id)
+		if err != nil {
+			return err
+		}
+
+		RespondWithJSON(w, http.StatusOK, account)
 	}
 
-	account, err := api.store.GetAccountByID(id)
+	if r.Method == "DELETE" {
+		return api.handleDeleteAccount(w, r)
+	}
+
+	return nil
+}
+
+// Route: /v1/account/{id}
+// Method: DELETE
+// Description: This handler deletes the account with the specified ID.
+// Response: Returns a JSON object with a success message.
+func (api *APIServer) handleDeleteAccount(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
 	if err != nil {
 		return err
 	}
 
-	RespondWithJSON(w, http.StatusOK, account)
+	err = api.store.DeleteAccount(id)
+	if err != nil {
+		return err
+	}
 
+	RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Account deleted successfully"})
 	return nil
 }
 
