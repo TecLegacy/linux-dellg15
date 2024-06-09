@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/teclegacy/golang-ecom/types"
+	"github.com/teclegacy/golang-ecom/utils"
 )
 
 // Define Handler struct DI
@@ -26,5 +28,16 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
+	/*
+		route /api/v1/register POST
+		{firstname , lastname , email , password}
+		Check if user already Exists !Exists = create
+	*/
+
+	// Get json payload
+	var payload types.RegisterUserPayload
+	if err := utils.ParseJSON(r, payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+	}
 
 }
