@@ -7,32 +7,14 @@ import (
 	"github.com/teclegacy/golang-ecom/types"
 )
 
-type Store struct {
+type StoreRepo struct {
 	db *sql.DB
 }
 
-func NewUserStore(db *sql.DB) *Store {
-	return &Store{
+func NewStoreRepo(db *sql.DB) *StoreRepo {
+	return &StoreRepo{
 		db: db,
 	}
-}
-
-func (s *Store) GetUserByEmail(email string) (*types.User, error) {
-	rows, err := s.db.Query("SELECT * FROM user WHERE email = ?", email)
-	if err != nil {
-		return nil, err
-	}
-
-	u := new(types.User)
-
-	for rows.Next() {
-		u, err = ScanRowsIntoUser(rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return u, nil
 }
 
 func ScanRowsIntoUser(rows *sql.Rows) (*types.User, error) {
@@ -47,9 +29,43 @@ func ScanRowsIntoUser(rows *sql.Rows) (*types.User, error) {
 		return nil, err
 	}
 
+	return u, nil
+}
+
+func (s *StoreRepo) GetUserByEmail(email string) (*types.User, error) {
+	rows, err := s.db.Query("SELECT * FROM user WHERE email = ?", email)
+	if err != nil {
+		return nil, err
+	}
+
+	u := new(types.User)
+
+	for rows.Next() {
+		u, err = ScanRowsIntoUser(rows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if u.ID == 0 {
 		return nil, fmt.Errorf("user not found")
 	}
 
 	return u, nil
+}
+
+func (s *StoreRepo) GetUserByID(id int) (*types.User, error) {
+	return nil, nil
+}
+
+func (s *StoreRepo) CreateUser(user types.User) error {
+	stmt, err := s.db.Prepare("INSERT INTO user (first_name, last_name, email, password, created_at) VALUES (?, ?, ?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt)
+	if err != nil {
+		return err
+	}
+	return nil
 }
