@@ -4,7 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
+
+// Client Payload Validation
+var Validator = validator.New()
 
 // ParseJSON from request body
 func ParseJSON(r *http.Request, payload interface{}) error {
