@@ -59,7 +59,7 @@ func (s *StoreRepo) GetUserByID(id int) (*types.User, error) {
 }
 
 func (s *StoreRepo) CreateUser(user types.User) error {
-	stmt, err := s.db.Prepare("INSERT INTO user (first_name, last_name, email, password, created_at) VALUES (?, ?, ?, ?, ?)")
+	stmt, err := s.db.Prepare("INSERT INTO users (fistName, lastName, email, password, created_at) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
