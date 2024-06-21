@@ -16,14 +16,14 @@ func TestUserRegisterHandler(t *testing.T) {
 	mockUserStore := new(mockUserStore)
 	handler := NewHandler(mockUserStore)
 
-	t.Run("it fails when user payload is invalid", func(t *testing.T) {
+	t.Run("fails when user provides invalid payload", func(t *testing.T) {
 
 		//Request to /register POST
-		// Payload
+		// Invalid Payload
 		payload := types.RegisterUserPayload{
 			FirstName: "keshav",
 			LastName:  "kumar",
-			Email:     "invalid",
+			Email:     "INVALID-DATA",
 			Password:  "asd",
 		}
 
@@ -46,7 +46,45 @@ func TestUserRegisterHandler(t *testing.T) {
 
 		// Assert response status code
 		if rr.Code != http.StatusBadRequest {
-			t.Errorf("expected status %v but got %v", http.StatusOK, rr.Code)
+
+			t.Errorf("Expected status code %v, got %v", http.StatusOK, rr.Code)
+			t.Logf("Response body: %s", rr.Body.String())
+		}
+
+	})
+	t.Run("fails when user Exists", func(t *testing.T) {
+
+		//Request to /register POST
+		// Invalid Payload
+		payload := types.RegisterUserPayload{
+			FirstName: "keshav",
+			LastName:  "kumar",
+			Email:     "DATA@gmail.com",
+			Password:  "asd",
+		}
+
+		marshalledPayload, err := json.Marshal(payload)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		req, err := http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(marshalledPayload))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+
+		r := mux.NewRouter()
+		r.HandleFunc("/register", handler.handleRegister)
+
+		r.ServeHTTP(rr, req)
+
+		// Assert response status code
+		if rr.Code != http.StatusBadRequest {
+
+			t.Errorf("Expected status code %v, got %v", http.StatusOK, rr.Code)
+			t.Logf("Response body: %s", rr.Body.String())
 		}
 
 	})
@@ -55,6 +93,10 @@ func TestUserRegisterHandler(t *testing.T) {
 type mockUserStore struct{}
 
 func (m *mockUserStore) GetUserByEmail(email string) (*types.User, error) {
+	// Mock user NOT exists
+	// return nil, fmt.Errorf("user not found")
+
+	// User Found
 	return nil, nil
 }
 
