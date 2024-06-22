@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"github.com/teclegacy/golang-ecom/config"
 	"github.com/teclegacy/golang-ecom/service/auth"
 	"github.com/teclegacy/golang-ecom/types"
 	"github.com/teclegacy/golang-ecom/utils"
@@ -32,8 +33,42 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	response := []byte("hello")
-	w.Write(response)
+	//Parse Payload
+	var payload types.LoginUserPayload
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Validate Payload
+	if err := utils.Validator.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+		return
+	}
+
+	// Check if user Exists
+	u, err := h.Store.GetUserByEmail(payload.Email)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("email or password does not match1"))
+		return
+	}
+
+	// Compare Password
+	matched := auth.ComparePassword(u.Password, []byte(payload.Password))
+	if !matched {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("email or password does not match2"))
+		return
+	}
+
+	// create JWT token
+	token, err := auth.CreateJWT([]byte(config.Envs.JWTSecret), u.ID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
 }
 
 // route /api/v1/register POST

@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/teclegacy/golang-ecom/types"
 )
@@ -33,7 +34,7 @@ func ScanRowsIntoUser(rows *sql.Rows) (*types.User, error) {
 }
 
 func (s *StoreRepo) GetUserByEmail(email string) (*types.User, error) {
-	rows, err := s.db.Query("SELECT * FROM user WHERE email = ?", email)
+	rows, err := s.db.Query("SELECT * FROM users WHERE email = ?", email)
 	if err != nil {
 		return nil, err
 	}
@@ -51,11 +52,12 @@ func (s *StoreRepo) GetUserByEmail(email string) (*types.User, error) {
 		return nil, fmt.Errorf("user not found")
 	}
 
+	log.Println(u)
 	return u, nil
 }
 
 func (s *StoreRepo) GetUserByID(id int) (*types.User, error) {
-	rows, err := s.db.Query("SELECT * FROM user WHERE id = ?", id)
+	rows, err := s.db.Query("SELECT * FROM users WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
