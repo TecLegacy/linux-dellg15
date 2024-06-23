@@ -22,10 +22,26 @@ type User struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+type Product struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Image       string  `json:"image"`
+	Price       float64 `json:"price"`
+	// note that this isn't the best way to handle quantity
+	// because it's not atomic (in ACID), but it's good enough for this example
+	Quantity  int       `json:"quantity"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
 // Repository pattern for implementing Data access layer
 // With Service Layer
 type UserStore interface {
 	GetUserByEmail(email string) (*User, error)
 	GetUserByID(id int) (*User, error)
 	CreateUser(user User) error
+}
+
+type ProductStore interface {
+	GetAllProducts() ([]Product, error)
 }
