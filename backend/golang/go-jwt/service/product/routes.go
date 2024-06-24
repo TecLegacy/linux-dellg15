@@ -71,14 +71,3 @@ func (h *Handler) handlePostProduct(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "Product created successfully"})
 }
-
-// validate it
-// 	product := &Product{
-// 		ID:          1,
-// 		Name:        "Laptop",
-// 		Description: "A high-performance laptop.",
-// 		Image:       "https://example.com/laptop.jpg",
-// 		Price:       999.99,
-// 		Quantity:    10,
-// 		CreatedAt:   time.Now(),
-// }
