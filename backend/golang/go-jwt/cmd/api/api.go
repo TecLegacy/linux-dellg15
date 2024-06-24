@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/teclegacy/golang-ecom/service/product"
 	"github.com/teclegacy/golang-ecom/service/user"
 )
 
@@ -38,6 +39,12 @@ func (s *APIServer) Run() error {
 	//Register User Handlers
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
+
+	// Register Product Handler
+	productStore := product.NewStore(s.db)
+
+	productsHandler := product.NewProductHandler(productStore)
+	productsHandler.RegisterRoutes(subrouter)
 
 	srv := &http.Server{
 		Addr:    s.listenAddr,

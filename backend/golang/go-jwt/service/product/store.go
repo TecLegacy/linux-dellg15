@@ -17,7 +17,7 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) GetAllProducts() ([]types.Product, error) {
-	rows, err := s.db.Query("SELECT * FROM Products")
+	rows, err := s.db.Query("SELECT * FROM products")
 	if err != nil {
 		return nil, err
 	}
@@ -40,6 +40,16 @@ func (s *Store) GetAllProducts() ([]types.Product, error) {
 	}
 
 	return products, nil
+}
+
+func (s *Store) CreateProduct(product types.Product) error {
+	query := `INSERT INTO products (id, name, description, image, price, quantity, createdAt) 
+				VALUES (?, ?, ?, ?, ?, ?, ?)`
+	_, err := s.db.Exec(query, product.ID, product.Name, product.Description, product.Image, product.Price, product.Quantity, product.CreatedAt)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func scanRowsIntoProduct(rows *sql.Rows) (*types.Product, error) {

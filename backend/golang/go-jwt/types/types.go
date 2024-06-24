@@ -22,16 +22,26 @@ type User struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+// type Product struct {
+// 	ID          int     `json:"id"`
+// 	Name        string  `json:"name"`
+// 	Description string  `json:"description"`
+// 	Image       string  `json:"image"`
+// 	Price       float64 `json:"price"`
+// 	// note that this isn't the best way to handle quantity
+// 	// because it's not atomic (in ACID), but it's good enough for this example
+// 	Quantity  int       `json:"quantity"`
+// 	CreatedAt time.Time `json:"createdAt"`
+// }
+
 type Product struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Image       string  `json:"image"`
-	Price       float64 `json:"price"`
-	// note that this isn't the best way to handle quantity
-	// because it's not atomic (in ACID), but it's good enough for this example
-	Quantity  int       `json:"quantity"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID          int       `json:"id" validate:"required"`
+	Name        string    `json:"name" validate:"required,min=2,max=100"`
+	Description string    `json:"description" validate:"required,min=10"`
+	Image       string    `json:"image" validate:"required,url"`
+	Price       float64   `json:"price" validate:"required,gt=0"`
+	Quantity    int       `json:"quantity" validate:"gte=0"`
+	CreatedAt   time.Time `json:"createdAt" validate:"required"`
 }
 
 // Repository pattern for implementing Data access layer
@@ -44,4 +54,5 @@ type UserStore interface {
 
 type ProductStore interface {
 	GetAllProducts() ([]Product, error)
+	CreateProduct(product Product) error
 }
