@@ -3,6 +3,7 @@
 [X] write more test cases
 [X] practice testing
 [] Test password hashing with UT
+[] payment integration - stripe?
 
 ### Tests covered for registering a user
 

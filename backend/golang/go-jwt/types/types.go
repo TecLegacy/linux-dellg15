@@ -44,6 +44,15 @@ type Product struct {
 	CreatedAt   time.Time `json:"createdAt" validate:"required"`
 }
 
+type CartCheckoutItem struct {
+	ProductID int `json:"productID"`
+	Quantity  int `json:"quantity"`
+}
+
+type CartCheckOutPayload struct {
+	Items []CartCheckoutItem `json:"items" validate:"required"`
+}
+
 // Repository pattern for implementing Data access layer
 // With Service Layer
 type UserStore interface {
