@@ -4,16 +4,22 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/teclegacy/golang-ecom/types"
 	"github.com/teclegacy/golang-ecom/utils"
 )
 
-type Handler struct{}
+type Handler struct {
+	store        types.OrderStore
+	productStore types.ProductStore
+}
 
-func NewCartHandler() *Handler {
-	return &Handler{}
+func NewCartHandler(store types.OrderStore, productStore types.ProductStore) *Handler {
+	return &Handler{
+		store:        store,
+		productStore: productStore,
+	}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {

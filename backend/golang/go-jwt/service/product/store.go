@@ -2,6 +2,8 @@ package product
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
 
 	"github.com/teclegacy/golang-ecom/types"
 )
@@ -50,6 +52,35 @@ func (s *Store) CreateProduct(product types.Product) error {
 		return err
 	}
 	return nil
+}
+
+func (s *Store) GetProductsByIDs(productIDs []int) ([]types.Product, error) {
+	placeHolders := strings.Repeat(",?", len(productIDs)-1)
+	query := fmt.Sprintf("SELECT * FROM products WHERE id IN (?%s)", placeHolders)
+
+	//Convert ProductIDs to []interface{}
+	args := make([]interface{}, len(productIDs))
+
+	for i, v := range productIDs {
+		args[i] = v
+	}
+
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	product := []types.Product{}
+
+	for rows.Next() {
+		p, err := scanRowsIntoProduct(rows)
+		if err != nil {
+			return nil, err
+		}
+		product = append(product, *p)
+	}
+
+	return product, nil
 }
 
 func scanRowsIntoProduct(rows *sql.Rows) (*types.Product, error) {
