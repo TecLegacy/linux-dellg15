@@ -43,4 +43,16 @@ func (h *Handler) handleCartCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// retrieve all products ID from payload
+	pID, err := getCartItemsIDs(cart.Items)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	product, err := h.productStore.GetProductsByIDs(pID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 }
