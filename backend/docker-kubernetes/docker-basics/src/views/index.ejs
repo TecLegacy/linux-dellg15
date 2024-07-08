@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/head'); %>
+  </head>
+  <body class="container">
+    <header>
+      <nav><%- include('./partials/nav'); %></nav>
+    </header>
+
+    <main>
+      <div class="p-5 mb-4 bg-light rounded-3">
+        <h1><%= title %></h1>
+
+        <p>Welcome to templating using EJS & Styling with bootstrap</p>
+      </div>
+    </main>
+
+    <div class="container mt-5">
+      <h1 class="text-center">Image Previewer</h1>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="form-group">
+            <div class="preview mt-4">
+              <img id="previewImg" src="#" alt="Image Preview" />
+            </div>
+
+            <label for="imageUpload" class="form-label">Upload an image</label>
+            <input
+              type="file"
+              class="form-control-file"
+              id="imageUpload"
+              accept="image/*"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="exampleInputEmail1"
+          aria-describedby="emailHelp"
+        />
+        <div id="emailHelp" class="form-text">
+          We'll never share your email with anyone else.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="exampleInputPassword1"
+        />
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <footer><%- include('./partials/footer'); %></footer>
+
+    <script>
+      document
+        .getElementById('imageUpload')
+        .addEventListener('change', function (event) {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const previewImg = document.getElementById('previewImg');
+              previewImg.src = e.target.result;
+              previewImg.classList.add('visible');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+    </script>
+  </body>
+</html>
