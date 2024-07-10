@@ -8,36 +8,32 @@
       <nav><%- include('./partials/nav'); %></nav>
     </header>
 
-    <main>
-      <div class="p-5 mb-4 bg-light rounded-3">
-        <h1><%= title %></h1>
-
-        <p>Welcome to templating using EJS & Styling with bootstrap</p>
-      </div>
-    </main>
-
     <div class="container mt-5">
-      <h1 class="text-center">Image Previewer</h1>
+      <h1 class="text-center">Image Preview and Upload</h1>
       <div class="row justify-content-center">
         <div class="col-md-6">
-          <div class="form-group">
-            <div class="preview mt-4">
-              <img id="previewImg" src="#" alt="Image Preview" />
-            </div>
-
-            <label for="imageUpload" class="form-label">Upload an image</label>
-            <input
-              type="file"
-              class="form-control-file"
-              id="imageUpload"
-              accept="image/*"
-            />
+          <div class="preview mt-4">
+            <img id="previewImg" src="#" alt="Image Preview" />
           </div>
+          <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="imageUpload" class="form-label"
+                >Upload an image</label
+              >
+              <input
+                type="file"
+                class="form-control-file"
+                id="imageUpload"
+                accept="image/*"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Upload Image</button>
+          </form>
         </div>
       </div>
     </div>
 
-    <form>
+    <form id="dataForm">
       <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input
@@ -68,6 +64,7 @@
     <footer><%- include('./partials/footer'); %></footer>
 
     <script>
+      // Handle image preview
       document
         .getElementById('imageUpload')
         .addEventListener('change', function (event) {
@@ -81,6 +78,67 @@
             };
             reader.readAsDataURL(file);
           }
+        });
+
+      // Handle form submission
+      document
+        .getElementById('dataForm')
+        .addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevent the form from submitting the traditional way
+
+          // Extract data from the form
+          const email = document.getElementById('exampleInputEmail1').value;
+          const password = document.getElementById(
+            'exampleInputPassword1'
+          ).value;
+          const isChecked = document.getElementById('exampleCheck1').checked;
+
+          // Log the data (or send it to a server)
+          console.log('Email:', email);
+          console.log('Password:', password);
+          console.log('Checked:', isChecked);
+
+          // Optionally, you can send this data to a server using fetch or another method
+
+          fetch('/api/v1/echo', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              password: password,
+              isChecked: isChecked,
+            }),
+          })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+        });
+
+      // Handle image upload
+      document
+        .getElementById('uploadForm')
+        .addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevent form from submitting
+
+          const formData = new FormData();
+          const fileInput = document.getElementById('imageUpload');
+          formData.append('imageFile', fileInput.files[0]);
+          console.log(formData.get('imageFile'));
+          // fetch('/upload', {
+          //   method: 'POST',
+          //   body: formData,
+          // })
+          //   .then(response => response.json())
+          //   .then(data => {
+          //     console.log('Success:', data);
+          //     // Handle response from server
+          //   })
+          //   .catch(error => {
+          //     console.error('Error:', error);
+          //     // Handle errors
+          //   });
         });
     </script>
   </body>

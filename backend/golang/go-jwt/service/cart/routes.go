@@ -50,9 +50,14 @@ func (h *Handler) handleCartCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, err := h.productStore.GetProductsByIDs(pID)
+	products, err := h.productStore.GetProductsByIDs(pID)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
+
+	// Create Order_Items
+
+	// Create Order
+	// single user can place multiple order with one or more order_items
 }
