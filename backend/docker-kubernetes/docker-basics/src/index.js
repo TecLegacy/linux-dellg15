@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+const MongoClient = require('mongodb').MongoClient;
 
 const app = express();
 const port = 3000;
@@ -42,6 +43,34 @@ app.post('/upload', upload.single('imageUpload'), (req, res) => {
 app.post('/api/v1/echo', (req, res) => {
   const { message } = req.body;
   console.log(req.body);
+  // Connect to MongoDB
+  const uri = 'mongodb://admin:password@localhost:27017';
+  const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+  // Insert request body into MongoDB
+  client.connect(err => {
+    if (err) {
+      console.error('Error connecting to MongoDB:', err);
+      return;
+    }
+    console.log('Connected to MongoDB');
+
+    const db = client.db('docker-mongo-example');
+    const collection = db.collection('requests');
+
+    collection.insertOne(req.body, (err, result) => {
+      if (err) {
+        console.error('Error inserting document:', err);
+        return;
+      }
+      console.log('Document inserted:', result.ops[0]);
+    });
+
+    client.close();
+  });
   res.status(201).json({ message });
 });
 
