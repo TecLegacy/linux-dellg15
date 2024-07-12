@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -14,8 +12,8 @@ services:
       MONGO_URL: mongodb://root:example@mongo:27017
     depends_on:
       - mongo
-    links:
-      - mongo
+    networks:
+      - mynetwork
 
   mongo:
     image: mongo
@@ -28,6 +26,8 @@ services:
       - '27017:27017'
     volumes:
       - mongo_data:/data/db
+    networks:
+      - mynetwork
 
   mongo-express:
     image: mongo-express
@@ -41,6 +41,11 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
     ports:
       - '8081:8081'
+    networks:
+      - mynetwork
 
 volumes:
   mongo_data:
+
+networks:
+  mynetwork:
