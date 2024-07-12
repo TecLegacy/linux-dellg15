@@ -43,7 +43,6 @@ app.post('/upload', upload.single('imageUpload'), (req, res) => {
 });
 
 app.post('/api/v1/echo', (req, res) => {
-  const { message } = req.body;
   console.log(req.body);
   const db = getDbInstance();
   db.collection('user').insertOne(req.body, (err, result) => {
@@ -53,9 +52,6 @@ app.post('/api/v1/echo', (req, res) => {
     }
     console.log('Document inserted:', result.ops[0]);
   });
-
-  //   client.close();
-  // });
 
   res.status(201).json({ message: 'data saved ', alertBox: true });
 });

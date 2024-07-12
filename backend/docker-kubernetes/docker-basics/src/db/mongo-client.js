@@ -9,7 +9,7 @@ export const connectMongoDB = async () => {
   }
 
   const mongoURL =
-    process.env.MONGO_URI || 'mongodb://admin:password@localhost:27017';
+    process.env.MONGO_URL || 'mongodb://admin:password@localhost:27017';
   const client = new MongoClient(mongoURL);
 
   try {

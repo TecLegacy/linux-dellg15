@@ -9,7 +9,7 @@ export const connectMongoose = async () => {
   }
 
   const mongoURI =
-    process.env.MONGO_URI || 'mongodb://localhost:27017/myDatabase';
+    process.env.MONGO_URL || 'mongodb://admin:password@localhost:27017';
 
   try {
     const connection = await mongoose.connect(mongoURI);
