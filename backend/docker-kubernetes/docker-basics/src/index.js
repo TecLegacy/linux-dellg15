@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 
-// import { connectMongoDB } from './db/mongo-client.js';
+import { connectMongoDB, getDbInstance } from './db/mongo-client.js';
 import { connectMongoose } from './db/mongoose.js';
 
 const app = express();
@@ -45,42 +45,26 @@ app.post('/upload', upload.single('imageUpload'), (req, res) => {
 app.post('/api/v1/echo', (req, res) => {
   const { message } = req.body;
   console.log(req.body);
-  // Connect to MongoDB
-  const uri = 'mongodb://admin:password@localhost:27017';
-  const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  // Insert request body into MongoDB
-  client.connect(err => {
+  const db = getDbInstance();
+  db.collection('user').insertOne(req.body, (err, result) => {
     if (err) {
-      console.error('Error connecting to MongoDB:', err);
+      console.error('Error inserting document:', err);
       return;
     }
-    console.log('Connected to MongoDB');
-
-    const db = client.db('docker-mongo-example');
-    const collection = db.collection('requests');
-
-    collection.insertOne(req.body, (err, result) => {
-      if (err) {
-        console.error('Error inserting document:', err);
-        return;
-      }
-      console.log('Document inserted:', result.ops[0]);
-    });
-
-    client.close();
+    console.log('Document inserted:', result.ops[0]);
   });
-  res.status(201).json({ message });
+
+  //   client.close();
+  // });
+
+  res.status(201).json({ message: 'data saved ', alertBox: true });
 });
 
 async function startServer() {
   try {
     // Wait for MongoDB connection
-    // await connectMongoDB();
-    await connectMongoose();
+    await connectMongoDB(); //! MONOGO client DB
+    // await connectMongoose(); //! MONGOOSE
 
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (error) {

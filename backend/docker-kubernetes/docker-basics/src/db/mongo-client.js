@@ -18,7 +18,7 @@ export const connectMongoDB = async () => {
       connection = await client.connect();
       console.log('MongoDB connected');
     }
-    const db = connection.db('sample_training');
+    const db = connection.db('mongo-express');
     dbInstance = db; // Store the db instance for reuse
     return dbInstance;
   } catch (error) {

@@ -112,7 +112,13 @@
             }),
           })
             .then(response => response.json())
-            .then(data => console.log('Success:', data))
+            .then(data => {
+              console.log('Success:', data);
+              // Handle response from server
+              if (data.alertBox) {
+                alert('Data submitted successfully');
+              }
+            })
             .catch(error => console.error('Error:', error));
         });
 
@@ -126,19 +132,19 @@
           const fileInput = document.getElementById('imageUpload');
           formData.append('imageFile', fileInput.files[0]);
           console.log(formData.get('imageFile'));
-          // fetch('/upload', {
-          //   method: 'POST',
-          //   body: formData,
-          // })
-          //   .then(response => response.json())
-          //   .then(data => {
-          //     console.log('Success:', data);
-          //     // Handle response from server
-          //   })
-          //   .catch(error => {
-          //     console.error('Error:', error);
-          //     // Handle errors
-          //   });
+          fetch('/api/v1/echo', {
+            method: 'POST',
+            body: formData,
+          })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Success:', data);
+              // Handle response from server
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              // Handle errors
+            });
         });
     </script>
   </body>
