@@ -1,9 +1,11 @@
 import express from 'express';
 import multer from 'multer';
-const MongoClient = require('mongodb').MongoClient;
+
+// import { connectMongoDB } from './db/mongo-client.js';
+import { connectMongoose } from './db/mongoose.js';
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -74,6 +76,18 @@ app.post('/api/v1/echo', (req, res) => {
   res.status(201).json({ message });
 });
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+async function startServer() {
+  try {
+    // Wait for MongoDB connection
+    // await connectMongoDB();
+    await connectMongoose();
+
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
+
+    process.exit(1);
+  }
+}
+
+startServer();
