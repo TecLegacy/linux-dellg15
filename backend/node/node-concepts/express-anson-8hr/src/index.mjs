@@ -1,4 +1,5 @@
 import express from 'express';
+import { matchedData, query, validationResult } from 'express-validator';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,84 +10,138 @@ app.use(express.urlencoded({ extended: true }));
 
 // Mock data
 let users = [
-  { id: 1, username: 'alice', displayName: 'aliceWonder' },
-  { id: 2, username: 'bob', displayName: 'bobSpark' },
-  { id: 3, username: 'charlie', displayName: 'charlieCloud' },
-  { id: 4, username: 'diana', displayName: 'dianaPhoenix' },
+  { id: 1, username: 'fiona', displayName: 'aliceWonder' },
+  { id: 2, username: 'charlie', displayName: 'bobSpark' },
+  { id: 3, username: 'bob', displayName: 'charlieCloud' },
+  { id: 4, username: 'george', displayName: 'dianaPhoenix' },
   { id: 5, username: 'eric', displayName: 'ericThunder' },
-  { id: 6, username: 'fiona', displayName: 'fionaStardust' },
-  { id: 7, username: 'george', displayName: 'georgeSilver' },
+  { id: 6, username: 'alice', displayName: 'fionaStardust' },
+  { id: 7, username: 'diana', displayName: 'georgeSilver' },
 ];
 
-// Helper function to filter and sort users
-const filterAndSortUsers = query => {
-  let filteredUsers = users;
-  if (query.filter) {
-    const sanitizedFilter = sanitizeString(query.filter);
-    filteredUsers = filteredUsers.filter(user =>
-      user.username.includes(sanitizedFilter)
-    );
-  }
-  if (query.sort === '1') {
-    filteredUsers.sort((a, b) => a.username.localeCompare(b.username));
-  } else if (query.sort === '-1') {
-    filteredUsers.sort((a, b) => b.username.localeCompare(a.username));
-  }
-  return filteredUsers;
-};
-
-// Sanitize string by removing special characters
-const sanitizeString = str => {
-  return str.replace(/[^\w\s]/gi, '');
-};
-
-// Routes
-
-// Get all users with optional filter and sort
-app.get('/users', (req, res) => {
-  const filteredUsers = filterAndSortUsers(req.query);
-  res.json(filteredUsers);
-});
-
-// Get user by ID
-app.get('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id, 10);
-  if (isNaN(userId)) {
-    res.status(400).send('Invalid user ID');
-    return;
-  }
-  const user = users.find(u => u.id === userId);
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404).send('User not found');
-  }
-});
-
-// Create new user
-app.post('/users', (req, res) => {
-  const { username, displayName } = req.body;
-  if (!username || !displayName) {
-    res.status(400).send('Username and displayName are required');
-    return;
-  }
-  const newUser = {
-    id: users.length + 1,
-    username: sanitizeString(username),
-    displayName: sanitizeString(displayName),
-  };
-  users.push(newUser);
-  res.status(201).json(newUser);
-});
-
-// Update user using PUT
-app.put('/users/:id', (req, res) => {
+// findUserIndex middleware
+const findUserIndex = (req, res, next) => {
   const userId = parseInt(req.params.id, 10);
   if (isNaN(userId)) {
     res.status(400).send('Invalid user ID');
     return;
   }
   const userIndex = users.findIndex(u => u.id === userId);
+  if (userIndex) {
+    req.userIndex = userIndex;
+    next();
+  }
+};
+
+//Sanitizing
+const sanitizeString = userString => {
+  return userString.replace(/[^\w\s]/gi, '');
+};
+
+// Routes
+
+// Get all users with optional filter and sort
+app.get(
+  '/users',
+  [
+    query('filter')
+      .optional()
+      .isString()
+      .withMessage('Filter must be a string')
+      .notEmpty()
+      .withMessage('Filter cannot be empty'),
+
+    query('sort')
+      .optional()
+      .isIn(['displayName', 'username'])
+      .withMessage('Sort must be displayName or username'),
+  ],
+  (req, res) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
+    const data = matchedData(req);
+
+    let filteredUsers = users;
+
+    // Apply filter if provided
+    if (data.filter) {
+      filteredUsers = users.filter(user => {
+        return (
+          user.username.toLowerCase().includes(data.filter.toLowerCase()) ||
+          user.displayName.toLowerCase().includes(data.filter.toLowerCase())
+        );
+      });
+    }
+
+    // Apply sort if provided
+    if (data.sort) {
+      filteredUsers.sort((a, b) => {
+        if (data.sort === 'username') {
+          return a.username.localeCompare(b.username);
+        } else if (data.sort === 'displayName') {
+          return a.displayName.localeCompare(b.displayName);
+        } else {
+          return 0;
+        }
+      });
+    }
+
+    if (filteredUsers.length === 0) {
+      return res.json('No User Found');
+    }
+
+    res.json(filteredUsers);
+  }
+);
+
+// Get user by ID
+app.get('/users/:id', findUserIndex, (req, res) => {
+  const { userIndex } = req;
+  if (userIndex === -1) {
+    return res.status(404).send('User not found');
+  }
+
+  res.json(users[userIndex]);
+});
+
+// Create new user
+app.post(
+  '/users',
+  [
+    body('username')
+      .isString()
+      .withMessage('Username must be a string')
+      .notEmpty()
+      .withMessage('Username cannot be empty'),
+
+    body('displayName')
+      .isString()
+      .withMessage('Display Name must be a string')
+      .notEmpty()
+      .withMessage('Display Name cannot be empty'),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const newUser = {
+      id: users.length + 1,
+      username: sanitizeString(username),
+      displayName: sanitizeString(displayName),
+    };
+    users.push(newUser);
+    res.status(201).json(newUser);
+  }
+);
+
+// Update user using PUT
+app.put('/users/:id', findUserIndex, (req, res) => {
+  const { userIndex } = req;
+
   if (userIndex !== -1) {
     const { username, displayName } = req.body;
     if (!username || !displayName) {
@@ -105,13 +160,8 @@ app.put('/users/:id', (req, res) => {
 });
 
 // Update user using PATCH
-app.patch('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id, 10);
-  if (isNaN(userId)) {
-    res.status(400).send('Invalid user ID');
-    return;
-  }
-  const userIndex = users.findIndex(u => u.id === userId);
+app.patch('/users/:id', findUserIndex, (req, res) => {
+  const { userIndex } = req;
   if (userIndex !== -1) {
     const user = users[userIndex];
     if (req.body.username) user.username = sanitizeString(req.body.username);
