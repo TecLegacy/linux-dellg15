@@ -1,5 +1,5 @@
 import express from 'express';
-import { matchedData, query, validationResult } from 'express-validator';
+import { matchedData, query, validationResult, body } from 'express-validator';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -127,6 +127,8 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    const data = matchedData(req);
+    const { username, displayName } = data;
 
     const newUser = {
       id: users.length + 1,
@@ -139,39 +141,88 @@ app.post(
 );
 
 // Update user using PUT
-app.put('/users/:id', findUserIndex, (req, res) => {
-  const { userIndex } = req;
+app.put(
+  '/users/:id',
+  [
+    [
+      body('username')
+        .isString()
+        .withMessage('Username must be a string')
+        .notEmpty()
+        .withMessage('Username cannot be empty'),
 
-  if (userIndex !== -1) {
-    const { username, displayName } = req.body;
-    if (!username || !displayName) {
-      res.status(400).send('Username and displayName are required');
-      return;
+      body('displayName')
+        .isString()
+        .withMessage('Display Name must be a string')
+        .notEmpty()
+        .withMessage('Display Name cannot be empty'),
+    ],
+  ],
+  findUserIndex,
+  (req, res) => {
+    const { userIndex } = req;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    users[userIndex] = {
-      id: users[userIndex].id,
-      username: sanitizeString(username),
-      displayName: sanitizeString(displayName),
-    };
-    res.json(users[userIndex]);
-  } else {
-    res.status(404).send('User not found');
+    const data = matchedData(req);
+
+    if (userIndex !== -1) {
+      const { username, displayName } = data;
+      if (!username || !displayName) {
+        res.status(400).send('Username and displayName are required');
+        return;
+      }
+      users[userIndex] = {
+        id: users[userIndex].id,
+        username: sanitizeString(username),
+        displayName: sanitizeString(displayName),
+      };
+      res.json(users[userIndex]);
+    } else {
+      res.status(404).send('User not found');
+    }
   }
-});
+);
 
 // Update user using PATCH
-app.patch('/users/:id', findUserIndex, (req, res) => {
-  const { userIndex } = req;
-  if (userIndex !== -1) {
-    const user = users[userIndex];
-    if (req.body.username) user.username = sanitizeString(req.body.username);
-    if (req.body.displayName)
-      user.displayName = sanitizeString(req.body.displayName);
-    res.json(user);
-  } else {
-    res.status(404).send('User not found');
+app.patch(
+  '/users/:id',
+  [
+    [
+      body('username')
+        .isString()
+        .withMessage('Username must be a string')
+        .notEmpty()
+        .withMessage('Username cannot be empty'),
+
+      body('displayName')
+        .isString()
+        .withMessage('Display Name must be a string')
+        .notEmpty()
+        .withMessage('Display Name cannot be empty'),
+    ],
+  ],
+  findUserIndex,
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const data = matchedData(req);
+    const { username, displayName } = data;
+    const { userIndex } = req;
+    if (userIndex !== -1) {
+      const user = users[userIndex];
+      if (username) user.username = sanitizeString(username);
+      if (displayName) user.displayName = sanitizeString(displayName);
+      res.json(user);
+    } else {
+      res.status(404).send('User not found');
+    }
   }
-});
+);
 
 // Delete user
 app.delete('/users/:id', (req, res) => {
