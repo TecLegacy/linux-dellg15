@@ -139,4 +139,4 @@ router.delete('/users/:id', (req, res) => {
   res.status(200).json({ user: deletedUser });
 });
 
-export const userRouter = router;
+export const usersRoutes = router;
