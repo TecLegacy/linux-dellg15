@@ -12,13 +12,7 @@ const router = Router();
 
 // Get user by ID
 router.get('/users/:id', findUserIndex, (req, res) => {
-  const { userIndex } = req;
-  if (userIndex === -1) {
-    return res.status(404).send('User not found');
-  }
-  console.log(userIndex);
-
-  res.json(users);
+  return res.status(200).json({ user: users[req.userIndex] });
 });
 
 // Get all users with optional filter and sort
@@ -138,8 +132,11 @@ router.delete('/users/:id', (req, res) => {
     res.status(400).send('Invalid user ID');
     return;
   }
-  users = users.filter(u => u.id !== userId);
-  res.status(204).send();
+
+  const userIndex = users.findIndex(user => user.id === userId);
+  const deletedUser = users.splice(userIndex, 1);
+
+  res.status(200).json({ user: deletedUser });
 });
 
 export const userRouter = router;
