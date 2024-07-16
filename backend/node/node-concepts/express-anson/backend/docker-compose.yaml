@@ -1,0 +1,54 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-express-app
+    ports:
+      - '3000:3000'
+    volumes:
+      - backend_data_anson:/app
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGO_URI=mongodb://anson:anson@mongo:27017/anson-db
+      - JWT_SECRET=anson
+    depends_on:
+      - mongo
+    networks:
+      - anson
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data_anson:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=anson
+      - MONGO_INITDB_ROOT_PASSWORD=anson
+    networks:
+      - anson
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=anson
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=anson
+    depends_on:
+      - mongo
+    networks:
+      - anson
+
+volumes:
+  backend_data_anson:
+  mongo_data_anson:
+
+networks:
+  anson:
+    driver: bridge
