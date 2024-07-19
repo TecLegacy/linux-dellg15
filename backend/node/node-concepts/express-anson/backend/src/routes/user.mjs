@@ -1,19 +1,39 @@
 import { Router } from 'express';
-import { findUserIndex, sanitizeString } from '../utils/helper.mjs';
-import { checkSchema, matchedData } from 'express-validator';
+import { body, checkSchema, matchedData } from 'express-validator';
 import {
-  userBodySchema,
+  POSTuserBodySchema,
   userQuerySchema,
+  PUTuserBodySchema,
 } from '../utils/validation-schema.mjs';
 import { userValidation } from '../middleware/express-validator.mjs';
 import { users } from '../data/constant.mjs';
-// import { User } from '../model/user-schema.mjs';
+import { User } from '../model/user-schema.mjs';
+import mongoose from 'mongoose';
 
 const router = Router();
 
 // Get user by ID
-router.get('/users/:id', findUserIndex, (req, res) => {
-  return res.status(200).json({ user: users[req.userIndex] });
+router.get('/users/:id', async (req, res) => {
+  const userId = req.params.id;
+  let userID;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json('Invalid ID format');
+  }
+
+  try {
+    const user = await User.find({ _id: userId });
+    if (!user) {
+      return res.status(500).json('Error finding user');
+    }
+    userID = user;
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: [{ message: 'Internal Server error' + err.toString() }] });
+  }
+
+  return res.status(200).json({ user: userID });
 });
 
 // Get all users with optional filter and sort
@@ -21,14 +41,27 @@ router.get(
   '/users',
   checkSchema(userQuerySchema),
   userValidation,
-  (req, res) => {
+  async (req, res) => {
     const data = matchedData(req);
+    let filteredUsers;
 
-    let filteredUsers = users;
+    try {
+      const users = await User.find({});
+      filteredUsers = users;
+    } catch (err) {
+      return res.status(500).json({
+        error: [
+          {
+            message: 'Internal server error, failed fetching users',
+          },
+        ],
+      });
+    }
 
     // Apply filter if provided
+    // return []users matching the condition
     if (data.filter) {
-      filteredUsers = users.filter(user => {
+      filteredUsers = filteredUsers.filter(user => {
         return (
           user.username.toLowerCase().includes(data.filter.toLowerCase()) ||
           user.displayName.toLowerCase().includes(data.filter.toLowerCase())
@@ -60,21 +93,26 @@ router.get(
 // Create new user
 router.post(
   '/users',
-  checkSchema(userBodySchema),
+  checkSchema(POSTuserBodySchema),
   userValidation,
   async (req, res) => {
-    const data = matchedData(req);
-    const { username, displayName } = data;
-
     try {
-      const newUser = new User({
-        username: sanitizeString(username),
-        displayName: sanitizeString(displayName),
+      const data = matchedData(req);
+      const { username, displayName, password } = data;
+      console.log(password);
+
+      const document = new User({
+        displayName,
+        password,
+        username,
       });
-      await newUser.save();
-      res.status(201).json(newUser);
-    } catch (err) {
-      res.status(500).send('Failed to create user');
+      await document.save();
+
+      res.status(201).json({ user: document });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: 'UserName Already Exists' + error.toString() });
     }
   }
 );
@@ -82,28 +120,36 @@ router.post(
 // Update user using PUT
 router.put(
   '/users/:id',
-  checkSchema(userBodySchema),
+  checkSchema(PUTuserBodySchema),
   userValidation,
-  findUserIndex,
-  (req, res) => {
-    const { userIndex } = req;
-
+  async (req, res) => {
     const data = matchedData(req);
+    const userId = req.params.id;
 
-    if (userIndex !== -1) {
-      const { username, displayName } = data;
-      if (!username || !displayName) {
-        res.status(400).send('Username and displayName are required');
-        return;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json('Invalid ID format');
+    }
+
+    try {
+      let user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json('User not found');
       }
-      users[userIndex] = {
-        id: users[userIndex].id,
-        username: sanitizeString(username),
-        displayName: sanitizeString(displayName),
-      };
-      res.json(users[userIndex]);
-    } else {
-      res.status(404).send('User not found');
+      user.username = data.username || 'null';
+      user.displayName = data.displayName || 'null';
+
+      await user.save();
+      return res.status(200).json({
+        message: 'Data modified',
+      });
+    } catch (err) {
+      res.status(500).json({
+        error: [
+          {
+            message: 'Failed due to internal server error' + err.toString(),
+          },
+        ],
+      });
     }
   }
 );
@@ -111,20 +157,37 @@ router.put(
 // Update user using PATCH
 router.patch(
   '/users/:id',
-  findUserIndex,
-  checkSchema(userBodySchema),
+  checkSchema(PUTuserBodySchema),
   userValidation,
-  (req, res) => {
+  async (req, res) => {
     const data = matchedData(req);
     const { username, displayName } = data;
-    const { userIndex } = req;
-    if (userIndex !== -1) {
-      const user = users[userIndex];
-      if (username) user.username = sanitizeString(username);
-      if (displayName) user.displayName = sanitizeString(displayName);
-      res.json(user);
-    } else {
-      res.status(404).send('User not found');
+
+    const userId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json('Invalid ID format');
+    }
+
+    try {
+      const user = await User.findById({
+        _id: req.params.id,
+      });
+      user.username = username;
+      user.displayName = displayName;
+
+      await user.save();
+
+      return res.status(200).json({
+        message: 'Data modified',
+      });
+    } catch (err) {
+      res.status(500).json({
+        error: [
+          {
+            message: 'Failed due to internal server error' + err.toString(),
+          },
+        ],
+      });
     }
   }
 );

@@ -18,6 +18,7 @@ export const findUserIndex = (req, res, next) => {
     d;
   }
 };
+
 //Sanitizing
 export const sanitizeString = userString => {
   return userString.replace(/[^\w\s]/gi, '');

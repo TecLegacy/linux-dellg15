@@ -27,12 +27,4 @@ const userSchema = new Schema(
 );
 
 // Create a model from the schema
-// export const User = mongoose.model('xxUser', userSchema);
-
-// const document = new User({
-//   username: 'keshav',
-//   password: 'keshav123',
-//   displayName: 'tecLegacy',
-// });
-
-// document.save();
+export const User = mongoose.model('User', userSchema);

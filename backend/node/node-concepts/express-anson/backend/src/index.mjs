@@ -44,6 +44,6 @@ app.use('/api/v1', productsRoutes);
 
 // Start server
 app.listen(PORT, async () => {
-  // await connectMongoose();
+  await connectMongoose();
   console.log(`Server is running on http://localhost:${PORT}`);
 });
