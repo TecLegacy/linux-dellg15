@@ -4,6 +4,20 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: backend-express-app
+    develop:
+      watch:
+        - action: rebuild
+          path: ./package.json
+
+        # - action: sync // when you need to sync files
+        - action: rebuild # rebuild on changes to Dockerfile
+          path: ./src
+          target: /home/app/src
+          ignore:
+            - node_modules/
+            - .vscode/
+
+    restart: always
     ports:
       - '3000:3000'
     volumes:
@@ -21,6 +35,7 @@ services:
   mongo:
     image: mongo
     container_name: mongo
+    restart: always
     ports:
       - '27017:27017'
     volumes:

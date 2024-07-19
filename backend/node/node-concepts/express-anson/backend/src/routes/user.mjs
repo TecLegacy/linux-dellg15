@@ -7,6 +7,7 @@ import {
 } from '../utils/validation-schema.mjs';
 import { userValidation } from '../middleware/express-validator.mjs';
 import { users } from '../data/constant.mjs';
+// import { User } from '../model/user-schema.mjs';
 
 const router = Router();
 
@@ -61,17 +62,20 @@ router.post(
   '/users',
   checkSchema(userBodySchema),
   userValidation,
-  (req, res) => {
+  async (req, res) => {
     const data = matchedData(req);
     const { username, displayName } = data;
 
-    const newUser = {
-      id: users.length + 1,
-      username: sanitizeString(username),
-      displayName: sanitizeString(displayName),
-    };
-    users.push(newUser);
-    res.status(201).json(newUser);
+    try {
+      const newUser = new User({
+        username: sanitizeString(username),
+        displayName: sanitizeString(displayName),
+      });
+      await newUser.save();
+      res.status(201).json(newUser);
+    } catch (err) {
+      res.status(500).send('Failed to create user');
+    }
   }
 );
 

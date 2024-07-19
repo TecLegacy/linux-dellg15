@@ -5,6 +5,9 @@ import session from 'express-session';
 import passport from 'passport';
 import dotenv from 'dotenv';
 import { userAuthStrategy } from './strategy/local-strategy.mjs';
+import { connectMongoose } from './db/connection-db.mjs';
+import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
 
 // dotenv
 dotenv.config();
@@ -27,6 +30,9 @@ app.use(
       // secure: true, // Use secure cookies in production
       maxAge: 60000 * 60, //1hr make it 7 days
     },
+    // store: MongoStore.create({
+    //   mongoUrl: mongoose.connection.getClient(),
+    // }),
   })
 );
 
@@ -37,6 +43,7 @@ app.use('/api/v1', usersRoutes);
 app.use('/api/v1', productsRoutes);
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  // await connectMongoose();
   console.log(`Server is running on http://localhost:${PORT}`);
 });
