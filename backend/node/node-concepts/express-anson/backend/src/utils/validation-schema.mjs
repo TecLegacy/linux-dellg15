@@ -1,4 +1,4 @@
-export const userQuerySchema = {
+export const GETuserQuerySchema = {
   filter: {
     in: ['query'],
     optional: true,

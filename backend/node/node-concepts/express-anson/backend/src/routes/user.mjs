@@ -1,28 +1,24 @@
 import { Router } from 'express';
-import { body, checkSchema, matchedData } from 'express-validator';
+import { checkSchema, matchedData } from 'express-validator';
 import {
   POSTuserBodySchema,
-  userQuerySchema,
+  GETuserQuerySchema,
   PUTuserBodySchema,
 } from '../utils/validation-schema.mjs';
 import { userValidation } from '../middleware/express-validator.mjs';
-import { users } from '../data/constant.mjs';
+
 import { User } from '../model/user-schema.mjs';
 import mongoose from 'mongoose';
+import { checkUserId } from '../middleware/mongoose-id.mjs';
 
 const router = Router();
 
 // Get user by ID
-router.get('/users/:id', async (req, res) => {
-  const userId = req.params.id;
+router.get('/users/:id', checkUserId, async (req, res) => {
   let userID;
 
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json('Invalid ID format');
-  }
-
   try {
-    const user = await User.find({ _id: userId });
+    const user = await User.find({ _id: req.userId });
     if (!user) {
       return res.status(500).json('Error finding user');
     }
@@ -39,7 +35,7 @@ router.get('/users/:id', async (req, res) => {
 // Get all users with optional filter and sort
 router.get(
   '/users',
-  checkSchema(userQuerySchema),
+  checkSchema(GETuserQuerySchema),
   userValidation,
   async (req, res) => {
     const data = matchedData(req);
@@ -122,13 +118,10 @@ router.put(
   '/users/:id',
   checkSchema(PUTuserBodySchema),
   userValidation,
+  checkUserId,
   async (req, res) => {
     const data = matchedData(req);
-    const userId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json('Invalid ID format');
-    }
+    const userId = req.userId;
 
     try {
       let user = await User.findById(userId);
@@ -159,18 +152,15 @@ router.patch(
   '/users/:id',
   checkSchema(PUTuserBodySchema),
   userValidation,
+  checkUserId,
   async (req, res) => {
     const data = matchedData(req);
     const { username, displayName } = data;
 
-    const userId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json('Invalid ID format');
-    }
-
+    const userId = req.userId;
     try {
       const user = await User.findById({
-        _id: req.params.id,
+        _id: userId,
       });
       user.username = username;
       user.displayName = displayName;
