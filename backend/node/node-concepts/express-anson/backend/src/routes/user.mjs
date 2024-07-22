@@ -8,29 +8,13 @@ import {
 import { userValidation } from '../middleware/express-validator.mjs';
 
 import { User } from '../model/user-schema.mjs';
-import mongoose from 'mongoose';
 import { checkUserId } from '../middleware/mongoose-id.mjs';
+import { getUserById } from '../handler/user-handler.mjs';
 
 const router = Router();
 
 // Get user by ID
-router.get('/users/:id', checkUserId, async (req, res) => {
-  let userID;
-
-  try {
-    const user = await User.find({ _id: req.userId });
-    if (!user) {
-      return res.status(500).json('Error finding user');
-    }
-    userID = user;
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ error: [{ message: 'Internal Server error' + err.toString() }] });
-  }
-
-  return res.status(200).json({ user: userID });
-});
+router.get('/users/:id', checkUserId, getUserById);
 
 // Get all users with optional filter and sort
 router.get(
