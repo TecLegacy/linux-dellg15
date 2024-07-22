@@ -4,6 +4,7 @@ import (
 	"context"
 	"employeeTestify/internal/entity"
 	"employeeTestify/internal/service"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -91,12 +92,12 @@ func (c *EmployeeController) DeleteEmployee(ctx *gin.Context) {
 }
 
 func (c *EmployeeController) GetEmployeesPaging(ctx *gin.Context) {
-	// PAGE is LIMIT
-	// PAGESIZE IF offset
+	// PAGE is on which page are you
+	// PAGESIZE is limit
 	var limit, offset int
 
-	pageStr := ctx.DefaultQuery("page", "2")          // limit
-	pageSizeStr := ctx.DefaultQuery("page_size", "1") // offset
+	pageStr := ctx.DefaultQuery("page_number", "1")    // page_number
+	pageSizeStr := ctx.DefaultQuery("page_limit", "1") // limit
 	sortBy := ctx.DefaultQuery("sort_by", "id")
 	order := ctx.DefaultQuery("order", "asc")
 
@@ -112,17 +113,11 @@ func (c *EmployeeController) GetEmployeesPaging(ctx *gin.Context) {
 		return
 	}
 
-	//page 1 -> 5 records  , 0 -5
-	// page 2 -> 5 records , 5 - 10
-	//page -> limit =5 , 10 - 15  // page * 5
+	limit = pageSize
+	offset = limit*page - limit
 
-	if pageSize == 1 {
-		limit = page
-		offset = 0
-	} else {
-		limit = page
-		offset = pageSize*limit - limit
-	}
+	log.Println("from controller limit ", limit)
+	log.Println("from controller offset", offset)
 
 	employees, err := c.service.GetEmployeesPaging(context.Background(), limit, offset, sortBy, order)
 
