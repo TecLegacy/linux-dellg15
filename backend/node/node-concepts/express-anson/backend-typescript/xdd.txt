@@ -1,0 +1,4 @@
+// "test": "echo \"Error: no test specified\" && exit 1",
+    // "start:dev": "nodemon src/index.ts",
+    // "build": "tsc --build ",
+    // "start": "build && node dist/index.js"
