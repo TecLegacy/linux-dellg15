@@ -8,6 +8,7 @@ import { userAuthStrategy } from './strategy/local-strategy.mjs';
 import { connectMongoose } from './db/connection-db.mjs';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
+import { practiceRouter } from './routes/practice-session.mjs';
 
 // dotenv
 dotenv.config();
@@ -24,15 +25,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: 'your_secret_key',
-    resave: false,
+    resave: true,
     saveUninitialized: false,
+    name: 'practice-session',
     cookie: {
-      // secure: true, // Use secure cookies in production
       maxAge: 60000 * 60, //1hr make it 7 days
+      // secure: process.env.NODE_ENV || true, // cookies are sent over https only
     },
-    // store: MongoStore.create({
-    //   mongoUrl: mongoose.connection.getClient(),
-    // }),
+    // persistent storage in mongodb over in-memory
+    store: MongoStore.create({
+      mongoUrl:
+        'mongodb://admin:password@localhost:27017/anson-express?authSource=admin',
+    }),
   })
 );
 
@@ -41,6 +45,9 @@ app.use(passport.session());
 
 app.use('/api/v1', usersRoutes);
 app.use('/api/v1', productsRoutes);
+
+//Session and Cookie practice arena
+app.use('/practice', practiceRouter);
 
 // Start server
 app.listen(PORT, async () => {
