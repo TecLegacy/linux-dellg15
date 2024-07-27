@@ -16,3 +16,8 @@
 
 [] Response normalization middleware
 [] error handling middleware
+
+### METHODS
+
+- findOne
+-

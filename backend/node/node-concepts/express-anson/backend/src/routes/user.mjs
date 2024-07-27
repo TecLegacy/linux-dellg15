@@ -9,7 +9,7 @@ import { userValidation } from '../middleware/express-validator.mjs';
 
 import { User } from '../model/user-schema.mjs';
 import { checkUserId } from '../middleware/mongoose-id.mjs';
-import { getUserById } from '../handler/user-handler.mjs';
+import { createUser, getUserById } from '../handler/user-handler.mjs';
 
 const router = Router();
 
@@ -75,26 +75,7 @@ router.post(
   '/users',
   checkSchema(POSTuserBodySchema),
   userValidation,
-  async (req, res) => {
-    try {
-      const data = matchedData(req);
-      const { username, displayName, password } = data;
-      console.log(password);
-
-      const document = new User({
-        displayName,
-        password,
-        username,
-      });
-      await document.save();
-
-      res.status(201).json({ user: document });
-    } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'UserName Already Exists' + error.toString() });
-    }
-  }
+  createUser
 );
 
 // Update user using PUT
