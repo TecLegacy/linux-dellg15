@@ -6,5 +6,7 @@ func main() {
 	// ExampleChannel()
 	// ChanAndGoRoutine()
 	// BuffChan()
-	UnBufferedChannel()
+	// UnBufferedChannel()
+	// CloseChannel()
+	BiAndUniChannel()
 }

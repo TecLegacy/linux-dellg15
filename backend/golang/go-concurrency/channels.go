@@ -35,3 +35,55 @@ func UnBufferedChannel() {
 	value := <-channel // This will block until a value is sent
 	fmt.Println("Received:", value)
 }
+
+// Close Channel Example
+func CloseChannel() {
+	channel := make(chan string, 5) // buffered bidirectional channel
+
+	go func() {
+		for i := 0; i < 5; i++ {
+			channel <- "money"
+		}
+
+		fmt.Println("length of channel is  ", len(channel))
+
+		// Sender should always close channel
+		close(channel)
+	}()
+
+	for {
+		// Check if channel is closed
+		value, ok := <-channel
+
+		if !ok {
+			fmt.Println("Channel is emptied")
+			break
+		}
+
+		fmt.Println("Incoming", value)
+	}
+
+}
+
+// Bidirectional channels and unidirectional channels
+// by default all channels are bidirectional
+// to make a channel unidirectional, you have to change the direction of channel in function signature
+
+func BiAndUniChannel() {
+
+	// bidirectional UnBuffered channel
+	channel := make(chan string)
+
+	go sendOnlyChan(channel, "50 apples")
+	receiveOnlyChan(channel)
+}
+
+func sendOnlyChan(chn chan<- string, message string) {
+	chn <- message
+
+	fmt.Println("Value sent")
+}
+
+func receiveOnlyChan(chn <-chan string) {
+	fmt.Println("Received value of  ", <-chn)
+}
