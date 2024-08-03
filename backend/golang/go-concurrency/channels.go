@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // Buffered and UnBuffered channels
 // Unbuffered Channels: Communication happens only when both sender and receiver are ready. They are useful for synchronization.
@@ -86,4 +89,50 @@ func sendOnlyChan(chn chan<- string, message string) {
 
 func receiveOnlyChan(chn <-chan string) {
 	fmt.Println("Received value of  ", <-chn)
+}
+
+/*
+-----
+SELECT with channels
+----
+*/
+
+//* Handling Multiple Channels
+
+func SelectWithChannels() {
+	chan1 := make(chan string)
+	chan2 := make(chan string)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		chan1 <- "message from chan1"
+	}()
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		chan2 <- "message from chan2"
+	}()
+
+	for i := 0; i < 2; i++ {
+		select {
+		case msg1 := <-chan1:
+			fmt.Println(msg1)
+		case msg2 := <-chan2:
+			fmt.Println(msg2)
+		case <-time.After(4 * time.Second):
+			fmt.Println("Timeout")
+		}
+
+	}
+}
+
+func TimeoutChannelWithSelect() {
+	channel := make(chan string)
+
+	select {
+	case msg := <-channel:
+		fmt.Println("Received:", msg)
+	default:
+		fmt.Println("No message received")
+	}
 }
