@@ -6,7 +6,7 @@
     "scripts": {
         "__development-scripts": "use `dev` for fast development & hot reloading in standalone environment on your local machine",
         "start:ts": "ts-node src/index.ts",
-        "dev": "pnpm format && pnpm lint && ts-node-dev --respawn --transpile-only src/index.ts",
+        "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
         "__production-scripts": "nodemon with ts-node is better for `development mode` in an containerized environment via ssh",
         "start:dev": "nodemon src/index.ts",
         "start": "node dist/index.js",
@@ -21,7 +21,11 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "express": "^4.19.2"
+        "bcrypt": "^5.1.1",
+        "express": "^4.19.2",
+        "express-async-handler": "^1.2.0",
+        "express-validator": "^7.2.0",
+        "jsonwebtoken": "^9.0.2"
     },
     "devDependencies": {
         "@eslint/js": "^9.9.0",
@@ -34,6 +38,7 @@
         "rimraf": "^6.0.1",
         "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0",
+        "tsconfig-paths": "^4.2.0",
         "typescript": "^5.5.4",
         "typescript-eslint": "^8.0.1"
     }

@@ -1,21 +1,22 @@
-const firstname: string = 'John'
-const lastname = 'Doe'
-const age: number = 30
+import express, { type Request, type Response } from 'express'
+import asyncHandler from 'express-async-handler'
+import { router as userRouter } from './routes/user'
 
-const sayHello = (name: string) => {
-    console.log(`Hello ${name}`)
-}
-sayHello('John Doe')
+const app = express()
 
-console.log(firstname, lastname, age)
+const PORT = process.env.PORT || 3000
 
-const obj = { name: 'John Doe', age: 30 }
-console.log(obj)
-const a = 3
-function b() {
-    const a = 10
-    console.log(a)
-}
-b()
+app.use(express.json())
 
-console.log(a)
+app.use('/api/auth', userRouter)
+
+app.get(
+    '/api/auth/register/demo',
+    asyncHandler((_: Request, res: Response) => {
+        res.send('Hello World!')
+    })
+)
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
+})
