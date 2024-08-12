@@ -1,40 +1,40 @@
 {
-  "name": "authorize-authenticate",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "__development-scripts": "use `dev` for fast development & hot reloading in standalone environment on your local machine",
-    "start:ts": "ts-node src/index.ts",
-    "dev": "pnpm format && pnpm lint && ts-node-dev --respawn --transpile-only src/index.ts",
-    "__production-scripts": "nodemon with ts-node is better for `development mode` in an containerized environment via ssh",
-    "start:dev": "nodemon src/index.ts",
-    "start": "node dist/index.js",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint  src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
-    "prebuild": "rimraf dist",
-    "postbuild": "echo 'Build completed!'",
-    "build": "pnpm prebuild && tsc -p . && pnpm postbuild"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.19.2"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.9.0",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.2.0",
-    "eslint": "9.x",
-    "globals": "^15.9.0",
-    "nodemon": "^3.1.4",
-    "prettier": "^3.3.3",
-    "rimraf": "^6.0.1",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.1"
-  }
+    "name": "authorize-authenticate",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "scripts": {
+        "__development-scripts": "use `dev` for fast development & hot reloading in standalone environment on your local machine",
+        "start:ts": "ts-node src/index.ts",
+        "dev": "pnpm format && pnpm lint && ts-node-dev --respawn --transpile-only src/index.ts",
+        "__production-scripts": "nodemon with ts-node is better for `development mode` in an containerized environment via ssh",
+        "start:dev": "nodemon src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint  src/**/*.ts --fix",
+        "format": "prettier --write src/**/*.ts",
+        "prebuild": "rimraf dist",
+        "postbuild": "echo 'Build completed!'",
+        "build": "pnpm prebuild && tsc -p . && pnpm postbuild"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.19.2"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.9.0",
+        "@types/express": "^4.17.21",
+        "@types/node": "^22.2.0",
+        "eslint": "9.x",
+        "globals": "^15.9.0",
+        "nodemon": "^3.1.4",
+        "prettier": "^3.3.3",
+        "rimraf": "^6.0.1",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.5.4",
+        "typescript-eslint": "^8.0.1"
+    }
 }
