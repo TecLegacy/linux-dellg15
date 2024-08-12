@@ -1,0 +1,149 @@
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: backend-express-app
+        develop:
+            watch:
+                - action: rebuild
+                  path: ./package.json
+                - action: rebuild
+                  path: ./src
+                  target: /app
+                  ignore:
+                      - node_modules/
+                      - .vscode/
+                      - .git/
+                      - .env
+                      - tsconfig.tsbuildinfo
+        env_file:
+            - .env
+        restart: unless-stopped
+        # command: pnpm start:docker
+        ports:
+            - '${PORT:-3000}:3000'
+        # volumes:
+        # - backend_data_2fa:/app
+        environment:
+            - NODE_ENV="${NODE_ENV:-development}"
+            - PORT="${PORT:-3000}"
+            - MONGO_URI="${MONGO_URI}"
+            - JWT_SECRET="${JWT_SECRET}"
+        depends_on:
+            - mongo
+        networks:
+            - 2fa_network
+
+    mongo:
+        image: mongo
+        container_name: mongo
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - '${MONGO_PORT:-27017}:27017'
+        volumes:
+            - mongo_data_2fa:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME="${MONGO_INITDB_ROOT_USERNAME}"
+            - MONGO_INITDB_ROOT_PASSWORD="${MONGO_INITDB_ROOT_PASSWORD}"
+        networks:
+            - 2fa_network
+
+    mongo-express:
+        image: mongo-express
+        container_name: mongo-express
+        env_file:
+            - .env
+        ports:
+            - '${MONGO_EXPRESS_PORT:-8081}:8081'
+              # - '8081:8081'
+        environment:
+            - ME_CONFIG_MONGODB_SERVER=mongo
+            - ME_CONFIG_MONGODB_ADMINUSERNAME="${MONGO_INITDB_ROOT_USERNAME}"
+            - ME_CONFIG_MONGODB_ADMINPASSWORD="${MONGO_INITDB_ROOT_PASSWORD}"
+        depends_on:
+            - mongo
+        networks:
+            - 2fa_network
+
+volumes:
+    # backend_data_2fa:
+    mongo_data_2fa:
+
+networks:
+    2fa_network:
+        driver: bridge
+# services:
+#     backend:
+#         build:
+#             context: .
+#             dockerfile: Dockerfile
+#         container_name: backend-express-app
+#         develop:
+#             watch:
+#                 - action: rebuild
+#                   path: ./package.json
+#                 - action: sync
+#                   path: ./src
+#                   target: /app
+#                   ignore:
+#                       - node_modules/
+#                       - .vscode/
+#                       - .git/
+#                       - .env
+#                       - tsconfig.tsbuildinfo
+#         env_file:
+#             - .env
+#         restart: unless-stopped
+#         ports:
+#             - '${BACKEND_PORT:-3000}:3000'
+#         environment:
+#             - NODE_ENV="${NODE_ENV:-development}"
+#             - PORT=3000
+#             - MONGO_URI="${MONGO_URI}"
+#             - JWT_SECRET="${JWT_SECRET}"
+#         depends_on:
+#             - mongo
+#         networks:
+#             - 2fa_network
+
+#     mongo:
+#         image: mongo
+#         container_name: mongo
+#         env_file:
+#             - .env
+#         restart: always
+#         ports:
+#             - '${MONGO_PORT:-27017}:27017'
+#         volumes:
+#             - mongo_data_2fa:/data/db
+#         environment:
+#             - MONGO_INITDB_ROOT_USERNAME="${MONGO_INITDB_ROOT_USERNAME}"
+#             - MONGO_INITDB_ROOT_PASSWORD="${MONGO_INITDB_ROOT_PASSWORD}"
+#         networks:
+#             - 2fa_network
+
+#     mongo-express:
+#         image: mongo-express
+#         container_name: mongo-express
+#         env_file:
+#             - .env
+#         ports:
+#             - '${MONGO_EXPRESS_PORT:-8081}:8081'
+#         environment:
+#             - ME_CONFIG_MONGODB_SERVER=mongo
+#             - ME_CONFIG_MONGODB_ADMINUSERNAME="${MONGO_INITDB_ROOT_USERNAME}"
+#             - ME_CONFIG_MONGODB_ADMINPASSWORD="${MONGO_INITDB_ROOT_PASSWORD}"
+#         depends_on:
+#             - mongo
+#         networks:
+#             - 2fa_network
+
+# volumes:
+#     mongo_data_2fa:
+
+# networks:
+#     2fa_network:
+#         driver: bridge
