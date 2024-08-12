@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                              // Specify ECMAScript target version
+    "module": "commonjs",                           // Specify module code generation
+    "lib": ["ES2020"],                              // Specify library files to include in the compilation
+    "outDir": "./dist",                             // Redirect output structure to the directory
+    "rootDir": "./src",                             // Specify the root directory of input files
+    "strict": true,                                // Enable all strict type-checking options
+    "esModuleInterop": true,                       // Enables emit interoperability between CommonJS and ES Modules
+    "moduleResolution": "node",                    // Specify module resolution strategy
+    "resolveJsonModule": true,                     // Include modules imported with `.json` extension
+    "skipLibCheck": true,                          // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true,      // Disallow inconsistently-cased references to the same file
+    "noEmitOnError": true,                         // Do not emit output if there are errors
+    "noImplicitAny": true,                         // Raise error on expressions and declarations with an implied `any` type
+    "noUnusedLocals": true,                        // Report errors on unused locals
+    "noUnusedParameters": true,                    // Report errors on unused parameters
+    "noImplicitReturns": true,                     // Report error when not all code paths in function return a value
+    "noFallthroughCasesInSwitch": true,            // Report errors for fallthrough cases in switch statement
+    "incremental": true,                           // Enable incremental compilation
+    "sourceMap": true,                             // Generate corresponding `.map` files
+    "removeComments": true,                        // Remove comments from output files
+    "allowSyntheticDefaultImports": true,          // Allow default imports from modules with no default export
+    "experimentalDecorators": true                 // Enable experimental support for decorators
+  },
+  "include": ["src/**/*.ts"],                      // Include all TypeScript files in the src directory
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"] // Exclude node_modules and test files
+}
