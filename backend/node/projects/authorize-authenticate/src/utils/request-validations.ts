@@ -1,6 +1,7 @@
 import { body } from 'express-validator'
 
 export function validateName() {
+    console.log('hit1')
     return body('name')
         .isString()
         .withMessage('Name must be a string.')
@@ -14,6 +15,7 @@ export function validateName() {
 }
 
 export function validateEmail() {
+    console.log('hit2')
     return body('email')
         .isEmail()
         .withMessage('Invalid email address.')
@@ -24,6 +26,7 @@ export function validateEmail() {
 }
 
 export function validatePassword() {
+    console.log('hit3')
     return body('password')
         .isString()
         .withMessage('Password must be a string.')
