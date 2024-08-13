@@ -6,10 +6,13 @@ import {
     validatePassword,
 } from '../utils/request-validations'
 import { validationResult } from 'express-validator'
+import { userValidationSchema } from '@/utils/user-validation'
 
 export const router = Router()
 
 router.post('/register', validateUser(), registerUser)
+
+router.post('/register-n', userValidationSchema, registerUser)
 
 function validateUser() {
     return [
