@@ -17,7 +17,7 @@ COPY tsconfig.json ./
 COPY src ./src
 
 # Build the application
-RUN pnpm run build
+RUN pnpm build
 
 # Prune devDependencies
 RUN pnpm prune --prod

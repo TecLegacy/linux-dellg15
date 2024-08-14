@@ -22,7 +22,8 @@ services:
             - .env
         restart: unless-stopped
         ports:
-            - '${PORT:-3000}:3333'
+            # - '${PORT:-3000}:3333'
+            - '${PORT:-3000}:3000'
         environment:
             - NODE_ENV="${NODE_ENV:-development}"
             - PORT="${BACKEND_PORT:-3000}"
