@@ -1,9 +1,0 @@
-
-> authorize-authenticate@1.0.0 dev /home/keshav-linux/projects/linux-dellg15/backend/node/projects/authorize-authenticate
-> ts-node-dev --respawn --transpile-only src/index.ts
-
-[INFO] 18:13:03 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.5.4)
-[ERROR] 18:13:03 Error: Cannot find module '@/controller/user-controller'
-Require stack:
-- /home/keshav-linux/projects/linux-dellg15/backend/node/projects/authorize-authenticate/src/routes/user.ts
-- /home/keshav-linux/projects/linux-dellg15/backend/node/projects/authorize-authenticate/src/index.ts

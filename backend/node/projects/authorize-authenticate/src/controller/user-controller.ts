@@ -14,3 +14,23 @@ export const registerUser = asyncHandler(
         res.send('Hello World!!!')
     }
 )
+
+export const createUser = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() })
+            return
+        }
+
+        //validate user
+
+        // check if user already exists
+
+        // create user
+
+        // send response
+
+        res.send('Hello World!!!')
+    }
+)

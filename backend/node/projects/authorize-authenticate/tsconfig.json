@@ -22,10 +22,13 @@
         "removeComments": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
-        "baseUrl": ".",
+        "baseUrl": "./src",
         "paths": {
             "@/*": ["./src/*"],
-            "@controller/*": ["./src/controller/*"]
+            "@controller/*": ["controller/*"],
+            "@utils/*": ["utils/*"],
+            "@middleware/*": ["middleware/*"]
+            // "@routes": ["./src/routes/*"]
         }
     },
     "include": ["src/**/*.ts"],
