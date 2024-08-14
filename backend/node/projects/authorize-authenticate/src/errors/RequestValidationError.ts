@@ -3,9 +3,9 @@ import { CustomError } from './CustomError'
 
 export class RequestValidationError extends CustomError {
     statusCode = 400
-    constructor(public error: ValidationError[]) {
-        super('Failed parsing validation Lib')
 
+    constructor(public error: ValidationError[]) {
+        super(error[0].msg)
         Object.setPrototypeOf(this, RequestValidationError.prototype)
     }
 
@@ -14,7 +14,7 @@ export class RequestValidationError extends CustomError {
             if (err.type === 'field') {
                 return {
                     message: err.msg,
-                    field: err.path,
+                    field: err.value,
                 }
             }
             return { message: err.msg }

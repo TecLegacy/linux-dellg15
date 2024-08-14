@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from 'express'
 import asyncHandler from 'express-async-handler'
 import { router as userRouter } from './routes/user'
+import { error } from './middleware/errors'
 
 const app = express()
 
@@ -17,6 +18,8 @@ app.get(
     })
 )
 
+app.use(error)
+
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port check1 ${PORT}`)
+    console.log(`Server is running on port check ${PORT}`)
 })
