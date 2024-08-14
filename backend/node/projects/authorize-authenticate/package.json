@@ -4,10 +4,9 @@
     "description": "",
     "main": "dist/index.js",
     "scripts": {
-        "__development-scripts": "use `dev script` for fast development & hot reloading in standalone environment on your local machine",
-        "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
-        "__production-scripts": "nodemon with ts-node is better for `development mode` in an containerized environment via ssh",
+        "__comment_nodemon": "nodemon with ts-node is better for `development mode` in an containerized environment via ssh where as ts-node-dev is better for `development mode` in a local environment",
         "start:dev": "nodemon",
+        "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
         "start": "node  dist/index.js",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint  src/**/*.ts --fix",

@@ -34,10 +34,10 @@ COPY package.json ./
 
 # Set environment variables
 ENV NODE_ENV=production \
-  PORT=3333
+  PORT=3000
 
 # Expose the application port
-EXPOSE 3333
+EXPOSE 3000
 
 # Start the application
 CMD ["node", "dist/index.js"]

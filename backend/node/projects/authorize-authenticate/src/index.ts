@@ -4,9 +4,7 @@ import { router as userRouter } from './routes/user'
 
 const app = express()
 
-// const PORT = Number(process.env.PORT) || 3000
-// const PORT = process.env.PORT || 3000
-const PORT = 3000
+const PORT = Number(process.env.PORT) || 3000
 
 app.use(express.json())
 
@@ -19,9 +17,6 @@ app.get(
     })
 )
 
-// app.listen(PORT, '0.0.0.0', () => {
-//     console.log(`Server is running on port ${PORT}`)
-// })
-app.listen(PORT, () => {
-    console.log(`Server is running on port updated ${PORT}`)
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port check1 ${PORT}`)
 })
