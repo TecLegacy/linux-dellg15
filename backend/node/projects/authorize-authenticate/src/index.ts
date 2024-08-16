@@ -5,7 +5,7 @@ import { error } from '@middleware/errors'
 import { NotFoundError } from '@errors/NotFoundError'
 import { logEnvironmentVariables, noUnusedVars } from '@utils/dump-funcs'
 
-import { connect, connectMongoose } from '@/db/connection'
+import { connectMongoose } from '@/db/connection'
 
 const app = express()
 
@@ -33,10 +33,9 @@ app.use('*', (_, res) => {
 app.use(error)
 
 app.listen(PORT, '0.0.0.0', async () => {
-    //connection to mongodb
-    // logEnvironmentVariables()
+    logEnvironmentVariables()
 
-    // await connect()
+    //connection to mongodb
     await connectMongoose()
     console.log(`Server is running on ports ${PORT}`)
 })

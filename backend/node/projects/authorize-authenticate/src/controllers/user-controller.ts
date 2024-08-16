@@ -1,8 +1,9 @@
 import asyncHandler from 'express-async-handler'
 
 import type { Request, Response } from 'express'
-import { validationResult } from 'express-validator'
-import { User } from '@/models/user-model'
+import { matchedData, validationResult } from 'express-validator'
+import { User, UserAttrs } from '@/models/user-model'
+import { ConflictError } from '@/errors/ConflictError'
 
 export const registerUser = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
@@ -16,21 +17,30 @@ export const registerUser = asyncHandler(
     }
 )
 
+// @route POST /api/auth/register
+// @access Public
+// @desc Register a user
 export const createUser = asyncHandler(
-    async (_: Request, res: Response): Promise<void> => {
-        //validate user
+    async (req: Request, res: Response): Promise<void> => {
+        // Access validated data
+        const body = matchedData(req)
+        const userData: UserAttrs = {
+            username: body.username,
+            email: body.email,
+            password: body.password,
+        }
 
         // check if user exists
-        const data = {
-            username: 'admin',
-            email: 'test@gamail.com',
-            password: 'password',
+        const existingUser = await User.findOne({ email: userData.email })
+        if (existingUser) {
+            throw new ConflictError('User already exists')
         }
-        const user = User.build(data)
 
+        // create user
+        const user = User.build(userData)
         await user.save()
-        res.send(user)
-        // res.send('Successfully created user')
+
+        res.status(201).json({ message: 'User Created ', user })
         return
     }
 )

@@ -1,6 +1,7 @@
+import { Password } from '@/services/password'
 import mongoose from 'mongoose'
 
-interface UserAttrs {
+export interface UserAttrs {
     username: string
     email: string
     password: string
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema(
             transform(_, ret) {
                 ret.id = ret._id
                 delete ret._id
-                delete ret.__v
+                delete ret.password
             },
             versionKey: false,
         },
@@ -41,7 +42,10 @@ const userSchema = new mongoose.Schema(
 userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
         // hash password using bcrypt
+        const hashPass = await Password.hashPassword(this.get('password'))
+
         // set password to hashed password
+        this.set('password', hashPass)
     }
     next()
 })
