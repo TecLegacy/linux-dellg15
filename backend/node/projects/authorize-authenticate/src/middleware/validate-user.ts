@@ -1,4 +1,4 @@
-import { RequestValidationError } from '@/errors/RequestValidationError'
+import { RequestValidationError } from '@errors/RequestValidationError'
 import { type NextFunction, Response, Request } from 'express'
 import { validationResult } from 'express-validator'
 
