@@ -1,22 +1,23 @@
 import { checkSchema } from 'express-validator'
 
 export const userValidationSchema = checkSchema({
-    name: {
+    username: {
         in: ['body'],
         isString: {
-            errorMessage: 'Name must be a string.',
+            errorMessage: 'Username must be a string.',
         },
         trim: true,
         notEmpty: {
-            errorMessage: 'Name must not be empty.',
+            errorMessage: 'Username must not be empty.',
         },
         isLength: {
             options: { min: 1, max: 50 },
-            errorMessage: 'Name must be between 1 and 50 characters.',
+            errorMessage: 'Username must be between 1 and 50 characters.',
         },
         matches: {
             options: /^[a-zA-Z\s-]+$/,
-            errorMessage: 'Name can only contain letters, spaces, and hyphens.',
+            errorMessage:
+                'Username can only contain letters, spaces, and hyphens.',
         },
     },
     email: {

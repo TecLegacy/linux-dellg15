@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { registerUser, createUser } from '@controller/user-controller'
+import { registerUser, createUser } from '@/controllers/user-controller'
 
 import { userValidationSchema } from '@utils/user-validation-schema'
 import { isValidUser } from '@middleware/validate-user'
