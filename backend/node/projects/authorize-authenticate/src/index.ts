@@ -5,9 +5,14 @@ import { error } from '@middleware/errors'
 import { NotFoundError } from '@errors/NotFoundError'
 import { logEnvironmentVariables, noUnusedVars } from '@utils/dump-funcs'
 
+import { connect } from '@/db/connection'
+
 const app = express()
 
 const PORT = Number(process.env.BACKEND_PORT) || 3000
+
+// //local fast development
+// const PORT = 3001
 
 app.use(express.json())
 
@@ -27,7 +32,10 @@ app.use('*', (_, res) => {
 
 app.use(error)
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', async () => {
+    //connection to mongodb
     logEnvironmentVariables()
-    console.log(`Server is running on port check ${PORT}`)
+
+    await connect()
+    console.log(`Server is running on ports ${PORT}`)
 })
