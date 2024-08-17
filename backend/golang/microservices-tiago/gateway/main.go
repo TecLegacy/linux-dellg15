@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
-	"teclegacy/oms/common"
+
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/teclegacy/ms/oms/common"
 )
 
 var (
