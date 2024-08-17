@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option go_package = "github.com/teclegacy/oms/common/api";
+
+
+service OrderService{
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+}
+message CreateOrderRequest{
+  string CustomerId = 1;
+  repeated ItemsWithQuantity Items = 2;
+}
+message ItemsWithQuantity{
+  string ItemId = 1;
+  int32 Quantity = 2;
+}
+
+message CreateOrderResponse{
+  string Id = 1; // mongoose id of the order
+  string CustomerId = 2;
+  string Status = 3;
+  repeated ItemsWithQuantity Items = 4;
+}
+
+message Items{
+  string Id = 1;
+  string Name = 2;
+  int32 Quntity = 3;
+  string PriceId = 4; // payment service id via stripe id 
+}
