@@ -1,11 +1,16 @@
 import { Router } from 'express'
-import { createUser, loginUser } from '@/controllers/user-controller'
+import {
+    createUser,
+    currentUser,
+    loginUser,
+} from '@/controllers/user-controller'
 
 import {
     userRegisterValidationSchema,
     userLoginValidationSchema,
 } from '@utils/user-validation-schema'
 import { isValidUser } from '@middleware/validate-user'
+import { isAuthenticated } from '@/middleware/isAuthenticated'
 
 export const router = Router()
 
@@ -20,4 +25,4 @@ router.post('/register', userRegisterValidationSchema, isValidUser, createUser)
 router.post('/login', userLoginValidationSchema, isValidUser, loginUser)
 
 //@route GET /api/v1/auth/login
-router.get('/current-user')
+router.get('/current-user', isAuthenticated, currentUser)

@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import type { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
 
@@ -78,9 +78,8 @@ export const loginUser = asyncHandler(
             throw new Unauthorized('Invalid credentials')
         }
 
-        console.log(user)
         // generate token
-        const token = jwt.sign({ user: user._id }, getEnv('JWT_SECRET'), {
+        const token = jwt.sign({ id: user._id }, getEnv('JWT_SECRET'), {
             subject: 'AccessAPI',
             expiresIn: '15m',
         })
@@ -94,4 +93,19 @@ export const loginUser = asyncHandler(
 )
 
 //
-export const currentUser = (req: Request, res: Response) => {}
+export const currentUser = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.user as JwtPayload
+    console.log(id)
+
+    const user = await User.findById(id)
+
+    if (!user) {
+        throw new Unauthorized('User not found')
+    }
+
+    res.status(200).json({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+    })
+})
