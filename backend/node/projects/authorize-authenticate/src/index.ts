@@ -16,7 +16,7 @@ const PORT = Number(process.env.BACKEND_PORT) || 3000
 
 app.use(express.json())
 
-app.use('/api/auth', userRouter)
+app.use('/api/v1/auth', userRouter)
 
 app.get(
     '/api/auth/register/demo',
@@ -33,6 +33,7 @@ app.use('*', (_, res) => {
 app.use(error)
 
 app.listen(PORT, '0.0.0.0', async () => {
+    // TODO: REMOVE THIS IN PRODUCTION
     logEnvironmentVariables()
 
     //connection to mongodb

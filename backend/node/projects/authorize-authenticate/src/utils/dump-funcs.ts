@@ -3,7 +3,7 @@ export function noUnusedVars(...rest: unknown[]) {
     console.log(noUnusedVarsDUMP)
 }
 
-// Function to log environment variables
+// Function to log environment variables development user only
 export function logEnvironmentVariables() {
     console.log('NODE_ENV:', process.env.NODE_ENV)
     console.log('BACKEND_PORT:', process.env.BACKEND_PORT)

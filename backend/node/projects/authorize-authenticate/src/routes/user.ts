@@ -1,11 +1,23 @@
 import { Router } from 'express'
-import { registerUser, createUser } from '@/controllers/user-controller'
+import { createUser, loginUser } from '@/controllers/user-controller'
 
-import { userValidationSchema } from '@utils/user-validation-schema'
+import {
+    userRegisterValidationSchema,
+    userLoginValidationSchema,
+} from '@utils/user-validation-schema'
 import { isValidUser } from '@middleware/validate-user'
 
 export const router = Router()
 
-router.get('/register', registerUser)
+// @route POST /api/v1/auth/register
+// @access Public
+// @desc Register a user
+router.post('/register', userRegisterValidationSchema, isValidUser, createUser)
 
-router.post('/register', userValidationSchema, isValidUser, createUser)
+// @route POST /api/v1/auth/login
+// @access Public
+// @desc Login a user and return access token
+router.post('/login', userLoginValidationSchema, isValidUser, loginUser)
+
+//@route GET /api/v1/auth/login
+router.get('/current-user')
