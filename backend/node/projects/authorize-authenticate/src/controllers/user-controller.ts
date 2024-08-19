@@ -8,6 +8,8 @@ import { ConflictError } from '@errors/ConflictError'
 import { Unauthorized } from '@errors/UnauthorizedError'
 import { Password } from '@/services/password'
 import { getEnv } from '@/config/env'
+import { RefreshToken } from '@/models/jwt-tokens'
+import mongoose from 'mongoose'
 
 // @route POST /api/v1/auth/register
 // @access Public
@@ -68,11 +70,27 @@ export const loginUser = asyncHandler(
             throw new Unauthorized('Invalid credentials')
         }
 
-        // generate token
+        // generate access token
         const token = jwt.sign({ id: user._id }, getEnv('JWT_SECRET'), {
             subject: 'AccessAPI',
-            expiresIn: '15m',
+            expiresIn: getEnv('JWT_EXPIRES_IN'),
         })
+
+        // generate refresh token
+        const refreshToken = jwt.sign(
+            { userId: user._id },
+            getEnv('REFRESH_TOKEN_SECRET'),
+            {
+                subject: 'RefreshAPI',
+                expiresIn: getEnv('REFRESH_TOKEN_EXPIRES_IN'),
+            }
+        )
+
+        // Save refresh token in db
+        await RefreshToken.build({
+            refreshToken,
+            userId: user._id as mongoose.Types.ObjectId,
+        }).save()
 
         res.status(200).json({
             id: user._id,
@@ -80,6 +98,7 @@ export const loginUser = asyncHandler(
             email: user.email,
             role: user.role,
             token,
+            refreshToken,
         })
     }
 )
@@ -89,7 +108,6 @@ export const loginUser = asyncHandler(
 // @desc return the current user
 export const currentUser = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.user as JwtPayload
-    console.log(id)
 
     const user = await User.findById(id)
 

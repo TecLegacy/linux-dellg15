@@ -8,6 +8,7 @@ import { logEnvironmentVariables, noUnusedVars } from '@utils/dump-funcs'
 import { connectMongoose } from '@/db/connection'
 import { adminRouter } from '@routes/admin'
 import { modRouter } from '@routes/moderator'
+import { tokenRouter } from '@routes/token'
 
 const app = express()
 
@@ -18,6 +19,8 @@ app.use(express.json())
 app.use('/api/v1/auth', userRouter)
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/moderator', modRouter)
+
+app.use('/api/v1/refresh-token', tokenRouter)
 
 app.use('*', (_, res) => {
     throw new NotFoundError('Page Not Found!')
