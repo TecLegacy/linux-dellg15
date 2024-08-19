@@ -5,7 +5,7 @@ import { Unauthorized } from '@/errors/UnauthorizedError'
 
 export const isAuthenticated = (
     req: Request,
-    _: Response,
+    res: Response,
     next: NextFunction
 ) => {
     // Check if user has a JWT token in the request header
@@ -24,6 +24,21 @@ export const isAuthenticated = (
         next()
     } catch (error) {
         console.log(error)
-        throw new Unauthorized('Access token invalid or expired')
+
+        if (error instanceof jwt.TokenExpiredError) {
+            res.status(401).json({
+                message: 'Access token expired',
+                code: 'AccessTokenExpired',
+            })
+            return
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            res.status(401).json({
+                message: 'Access token invalid',
+                code: 'AccessTokenInvalid',
+            })
+
+            return
+        }
     }
 }
