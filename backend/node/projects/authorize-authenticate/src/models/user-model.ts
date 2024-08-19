@@ -1,16 +1,19 @@
 import { Password } from '@/services/password'
+import { UserRole } from '@/types/userRole'
 import mongoose from 'mongoose'
 
 export interface UserAttrs {
     username: string
     email: string
     password: string
+    role: UserRole.Member | UserRole.Admin | UserRole.Moderator
 }
 
 interface UserDocument extends mongoose.Document {
     username: string
     email: string
     password: string
+    role: UserRole.Member | UserRole.Admin | UserRole.Moderator
     createdAt: Date
     updatedAt: Date
 }
@@ -24,6 +27,11 @@ const userSchema = new mongoose.Schema(
         username: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
+        role: {
+            type: String,
+            required: true,
+            enum: [UserRole.Member, UserRole.Admin, UserRole.Moderator],
+        },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
     },

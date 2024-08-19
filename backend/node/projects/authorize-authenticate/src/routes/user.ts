@@ -3,14 +3,14 @@ import {
     createUser,
     currentUser,
     loginUser,
-} from '@/controllers/user-controller'
+} from '@controllers/user-controller'
 
 import {
     userRegisterValidationSchema,
     userLoginValidationSchema,
 } from '@utils/user-validation-schema'
-import { isValidUser } from '@middleware/validate-user'
-import { isAuthenticated } from '@/middleware/isAuthenticated'
+import { isValidUser } from '@middlewares/validate-user'
+import { isAuthenticated } from '@middlewares/isAuthenticated'
 
 export const router = Router()
 
@@ -24,5 +24,7 @@ router.post('/register', userRegisterValidationSchema, isValidUser, createUser)
 // @desc Login a user and return access token
 router.post('/login', userLoginValidationSchema, isValidUser, loginUser)
 
-//@route GET /api/v1/auth/login
+//@route GET /api/v1/auth/current-user
+// @access Private
+// @desc Get current user
 router.get('/current-user', isAuthenticated, currentUser)

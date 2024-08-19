@@ -1,6 +1,20 @@
+import { UserRole } from '@/types/userRole'
 import { checkSchema } from 'express-validator'
 
 export const userRegisterValidationSchema = checkSchema({
+    role: {
+        in: ['body'],
+        optional: true,
+        trim: true,
+        isString: {
+            errorMessage: 'Role must be a string.',
+        },
+        isIn: {
+            options: [[UserRole.Member, UserRole.Admin, UserRole.Moderator]],
+            errorMessage:
+                'Role must be one of the following: member, admin, moderator.',
+        },
+    },
     username: {
         in: ['body'],
         isString: {

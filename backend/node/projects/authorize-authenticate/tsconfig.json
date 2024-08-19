@@ -25,9 +25,9 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
-            "@controller/*": ["src/controllers/*"],
+            "@controllers/*": ["src/controllers/*"],
             "@utils/*": ["./src/utils/*"],
-            "@middleware/*": ["./src/middleware/*"],
+            "@middlewares/*": ["./src/middleware/*"],
             "@routes/*": ["./src/routes/*"],
             "@errors/*": ["./src/errors/*"]
         }

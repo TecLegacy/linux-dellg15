@@ -1,29 +1,23 @@
-import express, { type Request, type Response } from 'express'
-import asyncHandler from 'express-async-handler'
+import express from 'express'
+
 import { router as userRouter } from '@routes/user'
-import { error } from '@middleware/errors'
+import { error } from '@middlewares/errors'
 import { NotFoundError } from '@errors/NotFoundError'
 import { logEnvironmentVariables, noUnusedVars } from '@utils/dump-funcs'
 
 import { connectMongoose } from '@/db/connection'
+import { adminRouter } from '@routes/admin'
+import { modRouter } from '@routes/moderator'
 
 const app = express()
 
 const PORT = Number(process.env.BACKEND_PORT) || 3000
 
-// //local fast development
-// const PORT = 3001
-
 app.use(express.json())
 
 app.use('/api/v1/auth', userRouter)
-
-app.get(
-    '/api/auth/register/demo',
-    asyncHandler((_: Request, res: Response) => {
-        res.send('Hello World!')
-    })
-)
+app.use('/api/v1/admin', adminRouter)
+app.use('/api/v1/moderator', modRouter)
 
 app.use('*', (_, res) => {
     throw new NotFoundError('Page Not Found!')

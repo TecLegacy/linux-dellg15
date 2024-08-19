@@ -1,27 +1,15 @@
 import asyncHandler from 'express-async-handler'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import type { Request, Response } from 'express'
-import { matchedData, validationResult } from 'express-validator'
+import { matchedData } from 'express-validator'
 
 import { User, UserAttrs } from '@/models/user-model'
-import { ConflictError } from '@/errors/ConflictError'
-import { Unauthorized } from '@/errors/UnauthorizedError'
+import { ConflictError } from '@errors/ConflictError'
+import { Unauthorized } from '@errors/UnauthorizedError'
 import { Password } from '@/services/password'
 import { getEnv } from '@/config/env'
 
-export const registerUser = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            res.status(400).json({ errors: errors.array() })
-            return
-        }
-
-        res.send('Hello World!!!')
-    }
-)
-
-// @route POST /api/auth/register
+// @route POST /api/v1/auth/register
 // @access Public
 // @desc Register a user
 export const createUser = asyncHandler(
@@ -31,6 +19,7 @@ export const createUser = asyncHandler(
         const userData: UserAttrs = {
             username: body.username,
             email: body.email,
+            role: body.role ?? 'member',
             password: body.password,
         }
 
@@ -50,12 +39,13 @@ export const createUser = asyncHandler(
                 id: user.id,
                 username: user.username,
                 email: user.email,
+                role: user.role,
             },
         })
     }
 )
 
-// @route POST /api/auth/login
+// @route POST /api/v1/auth/login
 // @access Public
 // @desc return the access token for the user
 export const loginUser = asyncHandler(
@@ -85,14 +75,18 @@ export const loginUser = asyncHandler(
         })
 
         res.status(200).json({
+            id: user._id,
             username: user.username,
             email: user.email,
+            role: user.role,
             token,
         })
     }
 )
 
-//
+// @route GET /api/v1/auth/current-user
+// @access Private
+// @desc return the current user
 export const currentUser = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.user as JwtPayload
     console.log(id)
@@ -107,5 +101,6 @@ export const currentUser = asyncHandler(async (req: Request, res: Response) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
     })
 })
