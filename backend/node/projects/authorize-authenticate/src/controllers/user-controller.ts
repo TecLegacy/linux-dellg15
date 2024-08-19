@@ -8,8 +8,9 @@ import { ConflictError } from '@errors/ConflictError'
 import { Unauthorized } from '@errors/UnauthorizedError'
 import { Password } from '@/services/password'
 import { getEnv } from '@/config/env'
-import { RefreshToken } from '@/models/jwt-tokens'
+import { Blacklist, RefreshToken } from '@/models/jwt-tokens'
 import mongoose from 'mongoose'
+import { noUnusedVars } from '@/utils/dump-funcs'
 
 // @route POST /api/v1/auth/register
 // @access Public
@@ -86,7 +87,24 @@ export const loginUser = asyncHandler(
             }
         )
 
-        // Save refresh token in db
+        // check if refresh token already exists
+        const existingRefreshToken = await RefreshToken.findOne({
+            userId: user._id,
+        })
+
+        if (existingRefreshToken) {
+            res.status(200).json({
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                token,
+                existingRefreshToken,
+            })
+            return
+        }
+
+        // Save refresh token in db only if it doesn't exist
         await RefreshToken.build({
             refreshToken,
             userId: user._id as mongoose.Types.ObjectId,
@@ -121,4 +139,34 @@ export const currentUser = asyncHandler(async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
     })
+})
+
+export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
+    const accessToken = req.accessToken
+    const user = req.user as JwtPayload
+
+    // delete refresh token
+    const refreshToken = await RefreshToken.findByIdAndDelete({ _id: user.id })
+
+    //check if access token is blacklisted already before saving to blacklist
+    const blacklist = await Blacklist.findOne({ userId: user.id })
+    console.log('blacklist', blacklist)
+
+    if (blacklist) {
+        res.status(204).send()
+        return
+    }
+
+    // save to blacklist
+    await Blacklist.build({
+        accessToken: accessToken!.value,
+        userId: user.id! as mongoose.Types.ObjectId,
+        exp: accessToken!.exp,
+    }).save()
+
+    console.log('refreshToken', refreshToken)
+
+    res.status(204).send()
+    return
+    noUnusedVars(refreshToken, blacklist)
 })

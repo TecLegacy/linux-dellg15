@@ -3,6 +3,7 @@ import {
     createUser,
     currentUser,
     loginUser,
+    logoutUser,
 } from '@controllers/user-controller'
 
 import {
@@ -28,3 +29,8 @@ router.post('/login', userLoginValidationSchema, isValidUser, loginUser)
 // @access Private
 // @desc Get current user
 router.get('/current-user', isAuthenticated, currentUser)
+
+// @route GET /api/v1/auth/logout
+// @access Private
+// @desc Logout a user
+router.get('/logout', isAuthenticated, logoutUser)

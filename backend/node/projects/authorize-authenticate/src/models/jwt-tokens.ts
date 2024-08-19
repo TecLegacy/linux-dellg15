@@ -33,3 +33,44 @@ export const RefreshToken = mongoose.model<
     RefreshTokenDocument,
     RefreshTokenModel
 >('RefreshToken', refreshTokenSchema)
+
+// Blacklist model
+interface BlackListAttr {
+    accessToken: string
+    userId: mongoose.Types.ObjectId
+    exp: number
+}
+
+interface BlackListDocument extends mongoose.Document {
+    accessToken: string
+    userId: mongoose.Types.ObjectId
+    exp: number
+}
+
+interface BlackListModel extends mongoose.Model<BlackListDocument> {
+    build(attr: BlackListAttr): BlackListDocument
+}
+
+const BlackListSchema = new mongoose.Schema({
+    accessToken: {
+        type: String,
+        required: true,
+    },
+    userId: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+    },
+    exp: {
+        type: Number,
+        required: true,
+    },
+})
+
+BlackListSchema.statics.build = (attr: BlackListAttr) => {
+    return new Blacklist(attr)
+}
+
+export const Blacklist = mongoose.model<BlackListDocument, BlackListModel>(
+    'BlackList',
+    BlackListSchema
+)
