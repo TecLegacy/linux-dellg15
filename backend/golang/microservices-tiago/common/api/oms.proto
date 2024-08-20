@@ -23,8 +23,16 @@ message CreateOrderResponse{
 }
 
 message Items{
-  string Id = 1;
+  string ItemId = 1;
   string Name = 2;
   int32 Quntity = 3;
   string PriceId = 4; // payment service id via stripe id 
 }
+
+
+/**
+ * structure of the order
+  *request -> { customerId: string, items: [{itemId: string, quantity: number}] }
+  response -> { id: string, customerId: string, status: string, items: [{itemId: string, name:string ,quantity: number, PiceId : string }] }
+ */
+

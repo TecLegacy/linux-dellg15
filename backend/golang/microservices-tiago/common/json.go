@@ -2,28 +2,26 @@ package common
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
-func WriteJSON(w http.ResponseWriter, status int, payload interface{}) {
+func WriteJSON(w http.ResponseWriter, status int, payload interface{}) error {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	if err := json.NewEncoder(w).Encode(payload); err != nil {
-		log.Printf("failed to encode json response: %v", err)
-		http.Error(w, "failed to encode json response", http.StatusInternalServerError)
-	}
+	return json.NewEncoder(w).Encode(payload)
+
 }
 
 func ReadJSON(r *http.Request, v interface{}) error {
-	if err := json.NewDecoder(r.Body).Decode(v); err != nil {
-		return err
-	}
-	return nil
+	return json.NewDecoder(r.Body).Decode(v)
 }
 
-func ErrorJSON(w http.ResponseWriter, status int, message string) {
-	WriteJSON(w, status, map[string]string{"error": message})
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+func ErrorJSON(w http.ResponseWriter, status int, message error) error {
+	return WriteJSON(w, status, ErrorResponse{Error: message.Error()})
 }
