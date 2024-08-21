@@ -15,7 +15,7 @@ var (
 	httpAddr = common.EnvString("HTTP_ADDR", ":8080")
 
 	// TODO: fix : Make sure its listening to more than one instance of order service
-	addrToOrderService = "localhost:3000"
+	addrToOrderService = "localhost:2000"
 )
 
 func main() {
