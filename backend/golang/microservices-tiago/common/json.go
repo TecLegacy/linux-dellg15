@@ -5,16 +5,16 @@ import (
 	"net/http"
 )
 
-func WriteJSON(w http.ResponseWriter, status int, payload interface{}) error {
+func WriteJSON(w http.ResponseWriter, status int, payload any) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	return json.NewEncoder(w).Encode(payload)
+	json.NewEncoder(w).Encode(payload)
 
 }
 
-func ReadJSON(r *http.Request, v interface{}) error {
+func ReadJSON(r *http.Request, v any) error {
 	return json.NewDecoder(r.Body).Decode(v)
 }
 
@@ -22,6 +22,6 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-func ErrorJSON(w http.ResponseWriter, status int, message error) error {
-	return WriteJSON(w, status, ErrorResponse{Error: message.Error()})
+func ErrorJSON(w http.ResponseWriter, status int, message error) {
+	WriteJSON(w, status, ErrorResponse{Error: message.Error()})
 }
