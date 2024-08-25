@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json.schemastore.org/swcrc",
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false,
+      "decorators": false,
+      "dynamicImport": true
+    },
+   "target": "es2016",
+   "loose": false,
+   "externalHelpers": false,
+   "keepClassNames": false,
+   "baseUrl": "./src",
+    "paths": {
+      "src/*": ["*"]
+    },
+    "preserveAllComments": true
+  },
+  "module": {
+    "type": "nodenext",
+    "strict": true,
+    "strictMode": true,
+    "noInterop": true,
+    "lazy": false
+  },
+  "minify": false,
+  "sourceMaps": true
+}

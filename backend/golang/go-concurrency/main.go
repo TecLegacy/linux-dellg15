@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+import kathrinecox "example/concurrency/kathrine-cox"
 
 func main() {
 
@@ -12,33 +12,20 @@ func main() {
 	// CloseChannel()
 	// BiAndUniChannel()
 	// BuffWorking()
+	// UnBuff()
 	// WaitGroupAndSyncOnce()
 	// SyncChannels()
 	// SelectWithChannels()
 	// TimeoutChannelWithSelect()
-	AtomicIncrement()
+	// AtomicIncrement()
+
+	//Concurrency in go by kathrine-cox
+	KatCox()
 }
 
-// * if the channel is closed and we still receive it wont throw error
-func BuffWorking() {
-	chann := make(chan int, 2)
-	// chann2 := make(chan string, 2)
-
-	go func(chn chan<- int) {
-
-		chn <- 1
-		chn <- 1
-		chn <- 1
-		// chn <- "hello"
-		// chn <- "hello"
-		// chn <- "hello"
-		close(chn)
-	}(chann)
-
-	fmt.Println("value listened", <-chann)
-	fmt.Println("value listened", <-chann)
-	fmt.Println("value listened", <-chann)
-	fmt.Println("value listened", <-chann) // 0
-	fmt.Println("value listened", <-chann) // 0
-
+// FROM the book
+// Concurrency in Go
+// by Kathrine-cox
+func KatCox() {
+	kathrinecox.K_output()
 }

@@ -29,19 +29,17 @@ export const createUser = async (req, res) => {
   const data = matchedData(req);
   const { username, displayName, password } = data;
 
-  //Check if user already exists
-  const user = await User.findOne({ username });
-
-  if (user) {
-    return res.status(400).json({
-      message: 'User already exists',
-    });
-  }
-
-  // hash password and save it to db
-
-  // console.log(username, displayName, password);
   try {
+    // Check if user already exists
+    const user = await User.findOne({ username });
+
+    if (user) {
+      return res.status(400).json({
+        message: 'User already exists',
+      });
+    }
+
+    // Hash password and save it to db
     const document = new User({
       displayName,
       password,

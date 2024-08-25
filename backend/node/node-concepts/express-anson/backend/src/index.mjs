@@ -4,9 +4,9 @@ import { productsRoutes } from './routes/product.mjs';
 import session from 'express-session';
 import passport from 'passport';
 import dotenv from 'dotenv';
-import { userAuthStrategy } from './strategy/local-strategy.mjs';
+
 import { connectMongoose } from './db/connection-db.mjs';
-import mongoose from 'mongoose';
+
 import MongoStore from 'connect-mongo';
 import { practiceRouter } from './routes/practice-session.mjs';
 

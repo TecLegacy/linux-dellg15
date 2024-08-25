@@ -30,7 +30,7 @@ export const tokenController = asyncHandler(
             refreshToken,
             userId,
         })
-        console.log('refresh token find from docs', refreshTokenDoc)
+
         if (!refreshTokenDoc) {
             throw new Unauthorized(
                 'Invalid refresh token or expired refresh token'

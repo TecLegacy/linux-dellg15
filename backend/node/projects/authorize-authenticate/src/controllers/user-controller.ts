@@ -99,7 +99,7 @@ export const loginUser = asyncHandler(
                 email: user.email,
                 role: user.role,
                 token,
-                existingRefreshToken,
+                refreshToken: existingRefreshToken.refreshToken,
             })
             return
         }

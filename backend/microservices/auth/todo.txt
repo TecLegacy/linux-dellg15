@@ -1,0 +1,33 @@
+Use these 
+1. Typescript with all strict options enabled
+2. ESLint with typescript-eslint
+3. Prettier
+4. Jest
+5. Husky
+6. Lint-staged
+7. Github Actions
+
+
+1. setup biome for linting and formatting 
+3. swc for faster compilation
+2. dotenv is not needed as we are going to provide it in k8s secret
+
+
+  "verbatimModuleSyntax": true,   
+
+  "allowJs": true,  
+
+  "resolveJsonModule": true,          
+
+  "moduleDetection": "force",                        
+
+  "isolatedModules": true,    
+
+  "allowImportingTsExtensions": true,    
+
+  "noUncheckedIndexedAccess": true,     
+
+  "moduleResolution": "Bundler",
+
+  "noEmit": true,   
+
